@@ -1,0 +1,25 @@
+services:
+
+    Jett\JSONEntitySerializerBundle\Service\Serializer:
+        public: true
+        arguments:
+            - '@Jett\JSONEntitySerializerBundle\Service\ClassGenerator'
+
+    entity_serializer:
+        alias:  Jett\JSONEntitySerializerBundle\Service\Serializer
+        public: true
+
+    Jett\JSONEntitySerializerBundle\Service\ClassGenerator:
+        arguments:
+            - '@annotation_reader'
+            - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
+            - '@doctrine.orm.entity_manager'
+            - '%kernel.cache_dir%/serializer'
+            - '%kernel.environment%'
+
+    Jett\JSONEntitySerializerBundle\Service\CacheWarmer:
+        arguments:
+            - '@Jett\JSONEntitySerializerBundle\Service\ClassGenerator'
+        tags:
+            - kernel.cache_warmer
+

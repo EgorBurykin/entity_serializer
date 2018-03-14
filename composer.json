@@ -1,0 +1,33 @@
+{
+    "name": "jett/entity_serializer",
+    "description": "Serializer for Doctrine 2 entities with single column key 'id' to JSON",
+    "type": "library",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Egor Burykin",
+            "email": "C5.Jett@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "symfony/framework-bundle":"^3.0|^4.0",
+        "twig/twig": "^2.0",
+        "doctrine/orm": "^2.5",
+        "doctrine/doctrine-bundle": "^1.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.4",
+        "friendsofphp/php-cs-fixer": "^2.10"
+
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jett\\JSONEntitySerializerBundle\\": ""
+        }
+    },
+    "minimum-stability": "stable"
+}

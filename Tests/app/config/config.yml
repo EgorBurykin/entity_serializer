@@ -1,0 +1,30 @@
+imports:
+    - { resource: '@JettJSONEntitySerializerBundle/Resources/config/services.yml' }
+
+framework:
+  secret: 'ThisTokenIsNotSoSecretChangeIt'
+
+
+doctrine:
+    dbal:
+        driver: pdo_sqlite
+        path: :memory:
+        memory: true
+    orm:
+        auto_generate_proxy_classes: '%kernel.debug%'
+        auto_mapping: false
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        mappings:
+            JettJSONEntitySerializerBundle:
+                type: annotation
+                prefix: Jett\JSONEntitySerializerBundle\Tests\Entity
+                dir: '%kernel.root_dir%/../Entity'
+
+jett_json_entity_serializer:
+    entities:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\EntityOne:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\EntityTwo:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\EntityThree:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFour:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFive:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix:
