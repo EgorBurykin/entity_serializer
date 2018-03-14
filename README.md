@@ -1,9 +1,10 @@
 # Key features and restrictions
 
 * Can serialize Doctrine 2 entities with single column key called id to JSON
-* It is really fast. Uses progressive caching and uses approach allowing to get benefit from OpCache
-* Can serialize entity according to sample (group). You can create any sample (group) at runtime
-* Easy configurable
+* It is really fast. Uses progressive caching and uses approach allowing to benefit from OpCache
+* Can serialize entity according to sample (serialization group). You can create any sample (group) at runtime
+* Easy configurable. You can control samples in one file instead of configuring multiple entities in
+multiple places
 
 # Installation
 
@@ -15,7 +16,7 @@ Install via composer:
     }
 }
 ```
- Connect bundle on Symfony 3 like that:
+ Add the bundle to your AppKernel.php file (for Symfony 3):
 ```php
 class AppKernel extends Kernel
 {
@@ -50,7 +51,7 @@ You can adjust behaviour of bundle by using annotations below:
 
 * **`@Ignore`** - This field will be ignored
 * **`@SerializedName`** - Specifies field name in JSON
-* **`@VirtualProperty`** - Method's call result will be included to JSON
+* **`@VirtualProperty`** - Result of method call  will be included in JSON
 * **`@TypeInfo`** - Allows to specify additional information for virtual property
 * **`@GetterName`** - Specifies getter name for property:
 
@@ -60,10 +61,10 @@ jett_json_entity_serializer:
     ignore_annotation: JMS\Serializer\Annotation\Exclude
     name_annotation: JMS\Serializer\Annotation\SerializedName
     virtual_annotation: JMS\Serializer\Annotation\VitrualProperty
+    getter_annotation: ~
 ```
 
-Serializer supports serialization groups. We call them samples due to we allow to create
-them at runtime. Also we can specify samples in config and use them by name:
+Serializer supports serialization groups. They are called samples. They can be created at runtime. You can also specify samples in config and use them by name:
 
 ```yaml
 jett_json_entity_serializer:
@@ -84,7 +85,7 @@ jett_json_entity_serializer:
                         "title": "-"
                     }
                 }
-            # И еще одну
+            # Another sample
             autocomplete: >
                 {
                     "id": "-",
@@ -93,7 +94,5 @@ jett_json_entity_serializer:
                     "fathername": "-"
                 }
 ```
-If you have not specified any sample in your config will be used special sample called "all".
-This sample includes every field of entity except ignored ones and replaces any relation to their
-dummy objects which contain only id field.
-
+If you have not specified any sample in your config, special sample called "all" will be used.
+It includes every field of entity except ignored ones and replaces any relation field with objects which contains only id field.
