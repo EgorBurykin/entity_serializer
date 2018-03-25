@@ -24,10 +24,14 @@ class SerializerTest extends KernelTestCase
     protected function setUp()
     {
         parent::setUp();
-        $kernel = static::bootKernel();
-        $this->serializer = $kernel->getContainer()->get(Serializer::class);
-        $this->serializer = $kernel->getContainer()->get('entity_serializer');
-        $this->em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+        static::bootKernel();
+        $this->serializer = self::$kernel->getContainer()->get(Serializer::class);
+
+        $this->em = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
+    }
+
+    public function testAccessibleByPublicName() {
+        $this->serializer = self::$kernel->getContainer()->get('entity_serializer');
     }
 
     public function testSimpleObjectSerialization()

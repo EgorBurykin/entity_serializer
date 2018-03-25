@@ -2,7 +2,8 @@
 
 * Can serialize Doctrine 2 entities with single column key called id to JSON
 * It is really fast. Uses progressive caching and uses approach allowing to benefit from OpCache
-* Can serialize entity according to sample (serialization group). You can create any sample (group) at runtime
+* Can serialize entity according to sample (other serializers use groups). You can create any sample at runtime cause it is
+simple object
 * Easy configurable. You can control samples in one file instead of configuring multiple entities in
 multiple places
 
@@ -46,6 +47,7 @@ jett_json_entity_serializer:
         # ...
 ```
 
+
 # Configuration
 You can adjust behaviour of bundle by using annotations below:
 
@@ -63,22 +65,43 @@ jett_json_entity_serializer:
     virtual_annotation: JMS\Serializer\Annotation\VitrualProperty
     getter_annotation: ~
 ```
+Serializer will be applicable only for entities listed in configuration.
+It supports serialization samples - objects defining how the result should look like.
+In configuration you can list samples and assign them names to use them later.
+Also at runtime you can create object and provide it as a sample.
 
-Serializer supports serialization groups. They are called samples. They can be created at runtime. You can also specify samples in config and use them by name:
-
+You can specify sample with name "default" which is used when you have not provided
+sample or sample name during serialization.
+If you have not configured default sample special sample called 'all' will be used.
+It exposes every property of entity except ignored and exposes every relation as object or
+collection of objects containing only id property.
+While configuring samples you should mind few things:
+* Entities which are not listed in configuration will be absent in result. In other words if you think 
+why some related entity is absent in result you should probably just add target entity
+to configuration.
+* You can configure transformer for specific property or relation. Some transformers, like 
+ 'datetime' are applied every time even if you have not specified them explicitly.
+* You can omit transformer as shown below.
+* Sample for every element of collection should be provided the same way
+ as for single valued relation.
 ```yaml
 jett_json_entity_serializer:
+    # These entities will be exposed
+    AppBundle\Entity\Role:
     AppBundle\Entity\User:
         samples:
-            # Default sample
+        # Transformer datetime can be omitted
+        # Roles property is a collection, but we provide sample for it as for single
+        # valued relation.
             default: >
                 {
-                    "id": "-",
-                    "username":"-",
-                    "firstname": "-",
-                    "lastname": "-",
-                    "fathername": "-",
-                    "phone":"-",
+                    "id": "",
+                    "username":"",
+                    "firstname": "",
+                    "lastname": "",
+                    "fathername": "",
+                    "phone":"",
+                    "birthdate": "datetime",
                     "email":"-",
                     "roles": {
                         "id": "-",
@@ -93,6 +116,29 @@ jett_json_entity_serializer:
                     "lastname": "-",
                     "fathername": "-"
                 }
+            # Username will be lowered. To see all available transformers see section below
+            # roles: ['ROLE_ONE','ROLE_TWO']
+            short: >
+                {
+                    "id":"",
+                    "username:"lower",
+                    "roles": "title"
+                }
 ```
-If you have not specified any sample in your config, special sample called "all" will be used.
-It includes every field of entity except ignored ones and replaces any relation field with objects which contains only id field.
+# Transformers
+Serializer proposes transformers as way to define how the property or relation should be
+serialized. There is few transformers included:
+* datetime
+* lower
+* upper
+* id
+* title
+
+Also you can define your own transformer easily. Just implement interface and define tagged
+service with tag 'entity_serializer.transformer' or use CallbackTransformer and register it manually:
+```php
+$call = function($data) {
+    return strtoupper($data);
+};
+$serializer->addTransformer(new CallbackTransformer($call,'upper'));
+```

@@ -23,3 +23,10 @@ services:
         tags:
             - kernel.cache_warmer
 
+    Jett\JSONEntitySerializerBundle\Transformer\DateTimeTransformer:
+        tags:
+            - entity_serializer.transformer
+
+    Jett\JSONEntitySerializerBundle\Transformer\EntityIdTransformer:
+        tags:
+            - entity_serializer.transformer

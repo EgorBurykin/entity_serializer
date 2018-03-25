@@ -77,7 +77,9 @@ class ClassGenerator
         $info = $this->_reader->getMethodAnnotation($method, TypeInfo::class);
 
         if (!$info) {
+            //TODO: use check if class exists instead of link type
             return $this->createVirtualFieldNode($propName, '', $method->name);
+
         } elseif ('link' !== $info->type) {
             return $this->createVirtualFieldNode($propName, $info->type, $method->name);
         } elseif ('link' === $info->type) {
@@ -150,12 +152,25 @@ class ClassGenerator
         return [$fields, $links];
     }
 
+    protected function getSamples()
+    {
+        $samples = [];
+        $entities = $this->_configService->getEntities();
+        foreach($entities as $entity => $data) {
+            if (!isset($data['samples'])) continue;
+            foreach($data['samples'] as $name=>$sample) {
+                $samples[$entity.$name] = json_decode($sample);
+            }
+        }
+        return $samples;
+    }
+
     public function loadSerializer()
     {
         $name = $this->getClassName();
         $file = $this->_cachePath.DIRECTORY_SEPARATOR.$name.'.php';
         require_once $file;
-
+        $name::setSamples($this->getSamples());
         return new $name();
     }
 
@@ -199,8 +214,9 @@ class ClassGenerator
      */
     public function checkSamples()
     {
-        foreach ($this->_configService->getEntities() as $entity => $attributes) {
-            $samples = $attributes['samples'];
+        foreach ($this->_configService->getEntities() as $entity => $data) {
+            if (!isset($data['samples'])) continue;
+            $samples = $data['samples'];
 
             foreach ($samples as $name => $sample) {
                 $obj = json_decode($sample);
@@ -212,7 +228,7 @@ class ClassGenerator
         }
     }
 
-    protected function getClassName()
+    public function getClassName()
     {
         return 'Serializer'.$this->_configService->getConfigHash();
     }
@@ -469,11 +485,8 @@ class ClassGenerator
     {
         try {
             list($fields, $links) = $this->getFieldsForClass($className);
-            $name = explode('/', $className);
-            $short_name = end($name);
-            $class = ucfirst($short_name).'Serializer';
+
             $content = $this->render('function.php.twig', [
-                'class' => $class,
                 'fields' => $fields,
                 'links' => $links,
                 'var' => 'var',

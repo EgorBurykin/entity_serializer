@@ -9,40 +9,19 @@ use Jett\JSONEntitySerializerBundle\Exception\EntityNotFoundException;
 class {{ name }} extends BaseSerializer {
 
     {% for entity,code in classes %}
-    protected static function normalize{{ entity|replace({'\\':''}) }}(&$object, &$sample) {
+    protected function normalize{{ entity|replace({'\\':''}) }}(&$object, &$sample) {
         {{ code|raw }}
     }
     {% endfor %}
 
-    public static function toPlainJSON($entity, &$sample, string $entityFQCN) {
+    public function toPlainJSON($entity, &$sample, string $entityFQCN) {
         switch ($entityFQCN) {
             {% for entity,code in classes
             %}case '{{ entity }}':
-                return self::normalize{{ entity|replace({'\\':''}) }}($entity, $sample);
+                return $this->normalize{{ entity|replace({'\\':''}) }}($entity, $sample);
             {% endfor
             %}default:
                 throw new EntityNotFoundException('{{ entity }}');
-        }
-    }
-    
-    public static function getSample($class, $title) {
-        if (isset(self::$_samples[$class.$title])) {
-            return self::$_samples[$class.$title];
-        }
-        switch($class) {
-            {% for entityFQCN, samples in entities
-            %}case '{{entityFQCN}}':
-                {% for sample, entity in samples['sample']
-                %}if ($title === '{{sample}}') {
-                    self::$_samples[$class.$title] = json_decode('{{entity | raw}}');
-                    return self::$_samples[$class.$title];
-                }
-                {% endfor
-                %}return 'all';
-                break;
-        {% endfor
-            %}default:
-                return 'all';
         }
     }
 }
