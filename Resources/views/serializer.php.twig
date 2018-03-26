@@ -32,7 +32,7 @@ class {{ name }} extends BaseSerializer {
         switch($class) {
             {% for entityFQCN, samples in entities
             %}case '{{entityFQCN}}':
-                {% for sample, entity in samples['sample']
+                {% for sample, entity in samples['samples']
                 %}if ($title === '{{sample}}') {
                     self::$_samples[$class.$title] = json_decode('{{entity | raw}}');
                     return self::$_samples[$class.$title];
