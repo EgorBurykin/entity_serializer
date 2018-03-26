@@ -7,9 +7,9 @@ if ($sample === 'id') {
         if ($sample === 'all' || isset($sample->{{field.name}})) {
             $val = ${{ object }}->{{field.getter}}();
             if ($val) {
-                {% if field.type != 'embed'%}
+                {% if field.type != 'embed' %}
                     ${{ var }}->{{field.name}} = $this->transform($val, '{{ field.type }}', $sample === 'all'? null: $sample->{{ field.name }});
-                {% else %}
+                {% else  %}
                     $_{{ object }} = $val;
                     {% include 'function.php.twig'
                         with {'var':'_'~var,

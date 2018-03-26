@@ -3,13 +3,13 @@ services:
     Jett\JSONEntitySerializerBundle\Service\Serializer:
         public: true
         arguments:
-            - '@Jett\JSONEntitySerializerBundle\Service\ClassGenerator'
+            - '@Jett\JSONEntitySerializerBundle\Service\SerializerBuilder'
 
     entity_serializer:
         alias:  Jett\JSONEntitySerializerBundle\Service\Serializer
         public: true
 
-    Jett\JSONEntitySerializerBundle\Service\ClassGenerator:
+    Jett\JSONEntitySerializerBundle\Service\SerializerBuilder:
         arguments:
             - '@annotation_reader'
             - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
@@ -19,14 +19,11 @@ services:
 
     Jett\JSONEntitySerializerBundle\Service\CacheWarmer:
         arguments:
-            - '@Jett\JSONEntitySerializerBundle\Service\ClassGenerator'
+            - '@Jett\JSONEntitySerializerBundle\Service\SerializerBuilder'
         tags:
             - kernel.cache_warmer
 
-    Jett\JSONEntitySerializerBundle\Transformer\DateTimeTransformer:
-        tags:
-            - entity_serializer.transformer
-
-    Jett\JSONEntitySerializerBundle\Transformer\EntityIdTransformer:
+    Jett\JSONEntitySerializerBundle\Transformer\Common\:
+        resource: '../../Transformer/Common/'
         tags:
             - entity_serializer.transformer

@@ -20,9 +20,10 @@ use Jett\JSONEntitySerializerBundle\Exception\SampleObjectException;
 use Jett\JSONEntitySerializerBundle\Nodes\FieldNode;
 use Jett\JSONEntitySerializerBundle\Nodes\GeneratorNode;
 use Jett\JSONEntitySerializerBundle\Nodes\RelationNode;
+use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ClassGenerator
+class SerializerBuilder
 {
     protected $_reader;
 
@@ -171,7 +172,8 @@ class ClassGenerator
         $file = $this->_cachePath.DIRECTORY_SEPARATOR.$name.'.php';
         require_once $file;
         $name::setSamples($this->getSamples());
-        return new $name();
+        $instance = new $name();
+        return $instance;
     }
 
     /**

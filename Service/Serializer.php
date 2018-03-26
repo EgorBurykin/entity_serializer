@@ -24,12 +24,12 @@ class Serializer implements SerializerInterface
 
     /**
      * Serializer constructor.
-     * @param ClassGenerator $generator
+     * @param SerializerBuilder $generator
      * @throws \Jett\JSONEntitySerializerBundle\Exception\ClassNotFoundException
      * @throws \Jett\JSONEntitySerializerBundle\Exception\RenderFailedException
      * @throws \Jett\JSONEntitySerializerBundle\Exception\SampleObjectException
      */
-    public function __construct(ClassGenerator $generator)
+    public function __construct(SerializerBuilder $generator)
     {
         $generator->generateService();
         $this->_instance = $generator->loadSerializer();

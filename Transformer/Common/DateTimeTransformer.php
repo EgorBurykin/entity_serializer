@@ -7,8 +7,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Jett\JSONEntitySerializerBundle\Transformer;
+namespace Jett\JSONEntitySerializerBundle\Transformer\Common;
 
+
+use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class DateTimeTransformer implements TransformerInterface
 {

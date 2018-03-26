@@ -62,15 +62,23 @@ abstract class BaseSerializer
     }
 
     /**
+     * Set transformers
+     * @param TransformerInterface[] $transformers
+     */
+    public function setTransformers($transformers)
+    {
+        $this->_transformers = $transformers;
+    }
+
+    /**
      * Adds transformer to pool
      * @param TransformerInterface $transformer
      */
-    public function addTransformer(TransformerInterface $transformer)
-    {
+    public function addTransformer(TransformerInterface $transformer) {
         $this->_transformers[$transformer->getId()] = $transformer;
     }
 
-    public function transform($value, $defaultTransformer, $currentTransformer)
+    public function transform($value, $type, $currentTransformer)
     {
         //TODO: write it
     }

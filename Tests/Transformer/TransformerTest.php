@@ -14,14 +14,12 @@ namespace Jett\JSONEntitySerializerBundle\Tests;
 use Doctrine\ORM\EntityManager;
 use Jett\JSONEntitySerializerBundle\Service\Serializer;
 use Jett\JSONEntitySerializerBundle\Service\SerializerInterface;
-use Jett\JSONEntitySerializerBundle\Tests\app\AppKernel;
-use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFive;
-use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFour;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityOne;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix;
-use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityThree;
-use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityTwo;
 use Jett\JSONEntitySerializerBundle\Transformer\CallbackTransformer;
+use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
+use Jett\JSONEntitySerializerBundle\Transformer\Common\LowerTransformer;
+use Jett\JSONEntitySerializerBundle\Transformer\Common\UpperTransformer;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
@@ -40,6 +38,27 @@ class TransformerTest extends KernelTestCase
         $this->em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
     }
 
+    public function testDateTransformer()
+    {
+        $transformer = new DateTimeTransformer();
+        $date = \DateTime::createFromFormat(DATE_W3C, Consts::DATE);
+        $this->assertEquals(Consts::DATE, $transformer->transform($date));
+    }
+
+    public function testUpperTransformer()
+    {
+        $transformer = new UpperTransformer();
+        $this->assertEquals(strtoupper(Consts::TITLE), $transformer->transform(Consts::TITLE));
+    }
+
+    public function testLowerTransformer()
+    {
+        $tr = new LowerTransformer();
+        $this->assertEquals(strtolower(Consts::TITLE), $tr->transform(Consts::TITLE));
+    }
+
+    //TODO: write entity transformer cases
+
     public function testOnSimpleFields() {
         $call = function($data) {
             return strtoupper($data);
@@ -54,14 +73,6 @@ class TransformerTest extends KernelTestCase
 
     public function testOnEntity() {
         $entity = EntitySix::get();
-        $titleTransformer = function($data) {
-            return $data->getTitle();
-        };
-        $idTransformer = function($data) {
-            return $data->getId();
-        };
-        $this->serializer->addTransformer(new CallbackTransformer($titleTransformer, 'title', [EntityOne::class, EntitySix::class]));
-        $this->serializer->addTransformer(new CallbackTransformer($idTransformer, 'id', [EntityOne::class, EntitySix::class]));
         $sample = (object)['id'=>'','title'=>'', 'entities1'=>'id', 'entities2'=>'title'];
         $object = $this->serializer->toPureObject($entity, $sample);
         $this->assertContains(Consts::ID, $object->entities1);
