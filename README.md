@@ -73,8 +73,8 @@ Also at runtime you can create object and provide it as a sample.
 You can specify sample with name "default" which is used when you have not provided
 sample or sample name during serialization.
 If you have not configured default sample special sample called 'all' will be used.
-It exposes every property of entity except ignored and exposes every relation as object or
-collection of objects containing only id property.
+It exposes every property of entity except ignored and exposes every relation as ID or
+collection of IDs.
 While configuring samples you should mind few things:
 * Entities which are not listed in configuration will be absent in result. In other words if you think 
 why some related entity is absent in result you should probably just add target entity
@@ -102,19 +102,19 @@ jett_json_entity_serializer:
                     "fathername": "",
                     "phone":"",
                     "birthdate": "datetime",
-                    "email":"-",
+                    "email":"",
                     "roles": {
-                        "id": "-",
-                        "title": "-"
+                        "id": "",
+                        "title": ""
                     }
                 }
             # Another sample
             autocomplete: >
                 {
-                    "id": "-",
-                    "firstname": "-",
-                    "lastname": "-",
-                    "fathername": "-"
+                    "id": "",
+                    "firstname": "",
+                    "lastname": "",
+                    "fathername": ""
                 }
             # Username will be lowered. To see all available transformers see section below
             # roles: ['ROLE_ONE','ROLE_TWO']
@@ -128,10 +128,10 @@ jett_json_entity_serializer:
 # Transformers
 Serializer proposes transformers as way to define how the property or relation should be
 serialized. There is few transformers included:
-* datetime
+* datetime - used by default for date fields
 * lower
 * upper
-* id
+* id - used by default if all map used
 * title
 
 Also you can define your own transformer easily. Just implement interface and define tagged
@@ -142,3 +142,5 @@ $call = function($data) {
 };
 $serializer->addTransformer(new CallbackTransformer($call,'upper'));
 ```
+
+Right now there is no check if transformer can be applied to this property. It's probably coming soon.

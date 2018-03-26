@@ -57,13 +57,7 @@ class TransformerTest extends KernelTestCase
         $this->assertEquals(strtolower(Consts::TITLE), $tr->transform(Consts::TITLE));
     }
 
-    //TODO: write entity transformer cases
-
     public function testOnSimpleFields() {
-        $call = function($data) {
-            return strtoupper($data);
-        };
-        $this->serializer->addTransformer(new CallbackTransformer($call,'upper', 'string'));
         $sample = (object)['id'=>'','title'=>'upper'];
         $entity = EntityOne::get();
         $object = $this->serializer->toPureObject($entity, $sample);
@@ -77,5 +71,19 @@ class TransformerTest extends KernelTestCase
         $object = $this->serializer->toPureObject($entity, $sample);
         $this->assertContains(Consts::ID, $object->entities1);
         $this->assertContains(Consts::TITLE, $object->entities2);
+    }
+
+    public function testCallbackTransformer()
+    {
+        $call = function($val) {
+            return substr($val,0,1);
+        };
+        $tr = new CallbackTransformer($call, 'firstChar');
+        $this->serializer->addTransformer($tr);
+        $sample = (object)['id'=>'','title'=>'firstChar'];
+        $entity = EntityOne::get();
+        $object = $this->serializer->toPureObject($entity, $sample);
+        $this->assertNotEmpty($object->title);
+        $this->assertEquals(substr(Consts::TITLE,0,1), $object->title);
     }
 }

@@ -14,10 +14,6 @@ use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class EntityIdTransformer implements TransformerInterface
 {
-    public function supports($type = null)
-    {
-        return true;
-    }
 
     public function transform($data)
     {

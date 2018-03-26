@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Jett\JSONEntitySerializerBundle\Exception\AbstractStaticCallException;
 use Jett\JSONEntitySerializerBundle\Nodes\Node;
+use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 /**
@@ -78,9 +79,21 @@ abstract class BaseSerializer
         $this->_transformers[$transformer->getId()] = $transformer;
     }
 
+    /**
+     * @param $value
+     * @param $type
+     * @param $currentTransformer - transformer name
+     * @return mixed - transformed value
+     */
     public function transform($value, $type, $currentTransformer)
     {
-        //TODO: write it
+        if (in_array($type, DateTimeTransformer::TYPES) && !$currentTransformer) {
+            return $this->_transformers['datetime']->transform($value);
+        }
+        if (!$currentTransformer) {
+            return $value;
+        }
+        return $this->_transformers[$currentTransformer]->transform($value);
     }
     /**
      * Converts entity to plain object containing properties according to sample.

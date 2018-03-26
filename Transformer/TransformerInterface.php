@@ -16,8 +16,6 @@ namespace Jett\JSONEntitySerializerBundle\Transformer;
  */
 interface TransformerInterface
 {
-    public function supports($type = null);
-
     public function transform($data);
 
     public function getId();

@@ -15,31 +15,23 @@ class CallbackTransformer implements TransformerInterface
 
     private $callback;
 
-    private $type;
-
     private $id;
 
     /**
      * EntityIdTransformer constructor.
      * @param callable $callback
-     * @param string $type
      * @param $id
      */
-    public function __construct(callable $callback, $id, $type = null)
+    public function __construct(callable $callback, $id)
     {
         $this->callback = $callback;
-        $this->type = $type;
         $this->id = $id;
-    }
-
-    public function supports($type = null)
-    {
-        return $this->type? $type === $this->type: true;
     }
 
     public function transform($data)
     {
-        return $this->callback($data);
+        $call = $this->callback;
+        return $call($data);
     }
 
     public function getId()

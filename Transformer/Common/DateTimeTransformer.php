@@ -24,11 +24,6 @@ class DateTimeTransformer implements TransformerInterface
 
     const TYPES = ['datetime','date','datetime_immutable','datetimetz','datetimetz_immutable'];
 
-    public function supports($type = null)
-    {
-        return isset(static::TYPES[strtolower($type)]);
-    }
-
     public function transform($data)
     {
         if (!$data instanceof \DateTime) {

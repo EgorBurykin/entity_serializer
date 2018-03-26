@@ -14,11 +14,6 @@ use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class EntityTitleTransformer implements TransformerInterface
 {
-    public function supports($type = null)
-    {
-        return true;
-    }
-
     public function transform($data)
     {
         return $data->getTitle();
