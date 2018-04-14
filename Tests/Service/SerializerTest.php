@@ -24,10 +24,14 @@ class SerializerTest extends KernelTestCase
     protected function setUp()
     {
         parent::setUp();
-        $kernel = static::bootKernel();
-        $this->serializer = $kernel->getContainer()->get(Serializer::class);
-        $this->serializer = $kernel->getContainer()->get('entity_serializer');
-        $this->em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
+        static::bootKernel();
+        $this->serializer = self::$kernel->getContainer()->get(Serializer::class);
+
+        $this->em = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
+    }
+
+    public function testAccessibleByPublicName() {
+        $this->serializer = self::$kernel->getContainer()->get('entity_serializer');
     }
 
     public function testSimpleObjectSerialization()
@@ -45,6 +49,7 @@ class SerializerTest extends KernelTestCase
 
     public function testObjectWithObjectSerialization()
     {
+
         $obj = $this->serializer->toPureObject(EntityThree::get());
         $this->assert1($obj);
         $this->assert2($obj);
@@ -56,7 +61,6 @@ class SerializerTest extends KernelTestCase
         $obj = $this->serializer->toPureObject(EntityFour::get());
         $this->assert1($obj);
         $this->assert2($obj);
-        $this->assert3($obj);
         $this->assert4($obj);
     }
 
@@ -107,8 +111,7 @@ class SerializerTest extends KernelTestCase
 
     protected function assert5($obj)
     {
-        $this->assertEquals(Consts::ID, $obj->entity->id);
-        $this->assertFalse(isset($obj->entity->title));
+        $this->assertEquals(Consts::ID, $obj->entity);
     }
 
     protected function assert6($obj)
@@ -116,7 +119,7 @@ class SerializerTest extends KernelTestCase
         for ($i = 1; $i <= 2; ++$i) {
             $this->assertEquals(2, count($obj->{'entities'.$i}));
             $this->assertTrue(is_array($obj->{'entities'.$i}));
-            $this->assertEquals(Consts::ID, $obj->{'entities'.$i}[0]->id);
+            $this->assertEquals(Consts::ID, $obj->{'entities'.$i}[0]);
         }
     }
 }

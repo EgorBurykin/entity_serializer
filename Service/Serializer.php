@@ -9,7 +9,7 @@
 
 namespace Jett\JSONEntitySerializerBundle\Service;
 
-use Jett\JSONEntitySerializerBundle\Exception\AbstractStaticCallException;
+use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 /**
  * Class Serializer provides serialization of classic doctrine entities with
@@ -20,10 +20,28 @@ class Serializer implements SerializerInterface
     /** @var BaseSerializer */
     protected $_instance;
 
-    public function __construct(ClassGenerator $generator)
+    protected $_class;
+
+    /**
+     * Serializer constructor.
+     * @param SerializerBuilder $generator
+     * @throws \Jett\JSONEntitySerializerBundle\Exception\ClassNotFoundException
+     * @throws \Jett\JSONEntitySerializerBundle\Exception\RenderFailedException
+     * @throws \Jett\JSONEntitySerializerBundle\Exception\SampleObjectException
+     */
+    public function __construct(SerializerBuilder $generator)
     {
         $generator->generateService();
         $this->_instance = $generator->loadSerializer();
+    }
+
+    /**
+     * Adds transformers to pool
+     * @param TransformerInterface $transformer
+     */
+    public function addTransformer(TransformerInterface $transformer)
+    {
+        $this->_instance->addTransformer($transformer);
     }
 
     /**
@@ -34,8 +52,6 @@ class Serializer implements SerializerInterface
      *
      * @param $entity
      * @param object|string|null $sample
-     *
-     * @throws AbstractStaticCallException
      *
      * @return object|object[]
      */
@@ -50,8 +66,6 @@ class Serializer implements SerializerInterface
      * @param $entity
      * @param string|object|null $sample - defines what fields should be included to result
      *
-     * @throws AbstractStaticCallException
-     *
      * @return string
      */
     public function serialize($entity, $sample = null)
@@ -64,6 +78,6 @@ class Serializer implements SerializerInterface
      */
     public function cleanCache()
     {
-        $this->_instance->cleanCache();
+        $this->_class::cleanCache();
     }
 }

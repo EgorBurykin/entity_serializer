@@ -13,6 +13,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Jett\JSONEntitySerializerBundle\Exception\AbstractStaticCallException;
 use Jett\JSONEntitySerializerBundle\Nodes\Node;
+use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
+use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 /**
  * This class serializes doctrine classic entity to JSON.
@@ -38,7 +40,7 @@ use Jett\JSONEntitySerializerBundle\Nodes\Node;
  *
  * @todo Use Transformers
  */
-abstract class BaseSerializer implements SerializerInterface
+abstract class BaseSerializer
 {
     public static $_cache = [];
 
@@ -46,21 +48,58 @@ abstract class BaseSerializer implements SerializerInterface
 
     protected static $_samples = [];
 
+    protected $_transformers = [];
+
     /**
      * Cleans cache.
      */
-    public function cleanCache()
+    public static function cleanCache()
     {
         self::$_cache = [];
     }
 
+    public static function setSamples($samples) {
+        //TODO: write it
+    }
+
+    /**
+     * Set transformers
+     * @param TransformerInterface[] $transformers
+     */
+    public function setTransformers($transformers)
+    {
+        $this->_transformers = $transformers;
+    }
+
+    /**
+     * Adds transformer to pool
+     * @param TransformerInterface $transformer
+     */
+    public function addTransformer(TransformerInterface $transformer) {
+        $this->_transformers[$transformer->getId()] = $transformer;
+    }
+
+    /**
+     * @param $value
+     * @param $type
+     * @param $currentTransformer - transformer name
+     * @return mixed - transformed value
+     */
+    public function transform($value, $type, $currentTransformer)
+    {
+        if (in_array($type, DateTimeTransformer::TYPES) && !$currentTransformer) {
+            return $this->_transformers['datetime']->transform($value);
+        }
+        if (!$currentTransformer) {
+            return $value;
+        }
+        return $this->_transformers[$currentTransformer]->transform($value);
+    }
     /**
      * Converts entity to plain object containing properties according to sample.
      *
      * @param $entity - Doctrine entity
      * @param object|string|null $sample - sample object or it's title from configuration or null, to use default
-     *
-     * @throws AbstractStaticCallException if someone is trying to call some abstract static methods
      *
      * @return object[]|object
      */
@@ -72,7 +111,7 @@ abstract class BaseSerializer implements SerializerInterface
         if (is_array($entity) || $entity instanceof Collection) {
             $objects = [];
             foreach ($entity as $o) {
-                $objects[] = static::toPureObject($o, $sample);
+                $objects[] = $this->toPureObject($o, $sample);
             }
 
             return $objects;
@@ -82,11 +121,11 @@ abstract class BaseSerializer implements SerializerInterface
             $sample = 'default';
         }
         if (is_string($sample)) {
-            $sample = 'all' === $sample ? $sample : static::getSample($class, $sample);
+            $sample = 'all' === $sample ? $sample : $this->getSample($class, $sample);
         }
-        $node = static::getNode($entity, $sample, $class);
+        $node = $this->getNode($entity, $sample, $class);
 
-        return self::compile($node, $sample);
+        return $this->compile($node, $sample);
     }
 
     /**
@@ -94,8 +133,6 @@ abstract class BaseSerializer implements SerializerInterface
      *
      * @param $entity
      * @param null $sample
-     *
-     * @throws AbstractStaticCallException
      *
      * @return string
      */
@@ -126,8 +163,10 @@ abstract class BaseSerializer implements SerializerInterface
      *
      * @param Node          $node
      * @param string|object $sample
+     *
+     * @return null|object
      */
-    protected static function compile(Node $node = null, $sample)
+    protected function compile(Node $node = null, $sample)
     {
         if (!$node) {
             return null;
@@ -141,16 +180,16 @@ abstract class BaseSerializer implements SerializerInterface
                 $obj->$key = [];
                 foreach ($link as $item) {
                     if ('all' === $sample) {
-                        $obj->$key[] = self::compile($item, 'id');
+                        $obj->$key[] = $this->compile($item, 'id');
                     } elseif ('id' !== $sample) {
                         $obj->$key[] = self::compile($item, $sample->$key);
                     }
                 }
             } else {
                 if ('all' === $sample) {
-                    $obj->$key = self::compile($link, 'id');
+                    $obj->$key = $this->compile($link, 'id');
                 } elseif ('id' !== $sample) {
-                    $obj->$key = self::compile($link, $sample->$key);
+                    $obj->$key = $this->compile($link, $sample->$key);
                 }
             }
         }
@@ -187,11 +226,9 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $sample - sample object or it's title. Samples provided by configuration of bundle
      * @param $entityFQCN - FQCN of entity
      *
-     * @throws AbstractStaticCallException - no way you can get this
-     *
      * @return Node|null
      */
-    protected static function getNode($entity, &$sample, $entityFQCN)
+    protected function getNode($entity, &$sample, $entityFQCN)
     {
         if (empty($entity)) {
             return null;
@@ -200,7 +237,7 @@ abstract class BaseSerializer implements SerializerInterface
         if ($node = self::cached($entity->getId(), $entityFQCN, $hash)) {
             return $node;
         }
-        $node = static::toPlainJSON($entity, $sample, $entityFQCN);
+        $node = $this->toPlainJSON($entity, $sample, $entityFQCN);
         self::cache($node, $entity->getId(), $entityFQCN, $hash);
 
         return $node;
@@ -213,14 +250,9 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $sample
      * @param string $entityFQCN
      *
-     * @throws AbstractStaticCallException
-     *
      * @return Node
      */
-    protected static function toPlainJSON($entity, &$sample, string $entityFQCN)
-    {
-        throw new AbstractStaticCallException('BaseSerializer::toPlainJSON');
-    }
+    abstract protected function toPlainJSON($entity, &$sample, string $entityFQCN);
 
     /**
      * Returns sample object for className according to sample object's title
@@ -229,12 +261,12 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $className
      * @param $sampleTitle
      *
-     * @throws AbstractStaticCallException
-     *
-     * @return object
+     * @return object|string
      */
-    protected static function getSample($className, $sampleTitle)
-    {
-        throw new AbstractStaticCallException('BaseSerializer::getSample');
+    public static function getSample($className, $sampleTitle) {
+        if (!isset(self::$_samples[$className.$sampleTitle])) {
+            return 'all';
+        }
+        return self::$_samples[$className.$sampleTitle];
     }
 }

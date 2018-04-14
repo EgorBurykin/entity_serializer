@@ -25,6 +25,16 @@ jett_json_entity_serializer:
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityOne:
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityTwo:
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityThree:
+            samples:
+                default: >
+                    {
+                        "id": "",
+                        "title": "",
+                        "object": {
+                            "id": "",
+                            "title": ""
+                        }
+                    }
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFour:
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFive:
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix:

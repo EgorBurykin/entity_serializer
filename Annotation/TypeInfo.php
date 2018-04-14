@@ -18,6 +18,7 @@ namespace Jett\JSONEntitySerializerBundle\Annotation;
 class TypeInfo
 {
     public $type = '';
+    //TODO: get rid of it
     public $targetEntity = '';
     public $singleValued = true;
 }
