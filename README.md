@@ -77,7 +77,7 @@ It exposes every property of entity except ignored and exposes every relation as
 collection of IDs.
 While configuring samples you should mind few things:
 * Entities which are not listed in configuration will be absent in result. In other words if you think 
-why some related entity is absent in result you should probably just add target entity
+why some related entity is absent in result you should probably just add them
 to configuration.
 * You can configure transformer for specific property or relation. Some transformers, like 
  'datetime' are applied every time even if you have not specified them explicitly.
