@@ -1,12 +1,41 @@
 # Key features and restrictions
 
-* Can serialize Doctrine 2 entities with single column key called id to JSON
-* It is really fast. Uses progressive caching and uses approach allowing to benefit from OpCache
-* Can serialize entity according to sample (other serializers use groups). You can create any sample at runtime cause it is
-simple object
+* It can serialize Doctrine 2 entities with single column key called "id" to JSON;
+* It is really fast. Uses progressive caching and uses approach allowing to
+ benefit from OpCache;
+* You can configure which fields will be serialized at runtime by providing sample object tree (other serializers use groups).
 * Easy configurable. You can control samples in one file instead of configuring multiple entities in
 multiple places
+* To tell serializer how to serialize a field or relation you can use transformers.
+# Purpose
+This serializer was created to perform work within daemon process.
+So check out [benchmark](https://github.com/EgorBurykin/serializer_benchmark). For my device it prints:
+```
+Scenario 1:
+ * Run-and-die process
+ * One entity to serialize
+ * Entity is not loaded to doctrine cache
+Jett serializer is ~ 2.6x faster
 
+Scenario 2:
+ * Web-socket daemon (continues execution)
+ * One entity to serialize
+ * Entity is loaded to doctrine cache once
+Jett serializer is ~ 12.8x faster
+
+Scenario 3:
+ * Run-and-die process
+ * Collection of entities to serialize
+ * Collection is not loaded to doctrine cache
+Jett serializer is ~ 4.6x faster
+
+Scenario 4:
+ * Web-socket daemon (continues execution)
+ * Collection of entities to serialize
+ * Collection is loaded to doctrine cache once
+Jett serializer is ~ 13.5x faster
+```
+Feel free to run it on your device.
 # Installation
 
 Install via composer:
@@ -17,6 +46,7 @@ Install via composer:
     }
 }
 ```
+## Symfony 3
  Add the bundle to your AppKernel.php file (for Symfony 3):
 ```php
 class AppKernel extends Kernel
@@ -46,8 +76,27 @@ jett_json_entity_serializer:
         AppBundle\Entity\Role:
         # ...
 ```
+## Symfony 4
 
+Add to config\bundles.php
+```php
+return [
+    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
+    //...
+    Jett\JSONEntitySerializerBundle\JettJSONEntitySerializerBundle::class => ['all' => true],
+];
+```
+Then add to config\packages\serializer.yaml:
+```yaml
+jett_json_entity_serializer:
+    entities:
+        # FQCN of entities
+        AppBundle\Entity\User:
+        AppBundle\Entity\Role:
+        # ...
 
+```
+The recipe is coming soon.
 # Configuration
 You can adjust behaviour of bundle by using annotations below:
 
