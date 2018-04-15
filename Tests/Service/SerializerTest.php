@@ -54,6 +54,7 @@ class SerializerTest extends KernelTestCase
         $this->assert1($obj);
         $this->assert2($obj);
         $this->assert3($obj);
+        //TODO: change object fields
     }
 
     public function testObjectWithArraySerialization()
@@ -69,6 +70,10 @@ class SerializerTest extends KernelTestCase
         $obj = $this->serializer->toPureObject(EntityFive::get());
         $this->assert1($obj);
         $this->assert5($obj);
+        $obj = $this->serializer->toPureObject(EntityFive::get(), 'extended');
+        $this->assert1($obj);
+        $this->assertEquals(Consts::ID, $obj->entity->id);
+        $this->assertEquals(Consts::TITLE, $obj->entity->title);
     }
 
     public function testObjectWithOneToManyRelationSerialization()
@@ -97,8 +102,8 @@ class SerializerTest extends KernelTestCase
 
     protected function assert3($obj)
     {
-        $this->assertEquals(Consts::ID, $obj->object->id);
-        $this->assertEquals(Consts::TITLE, $obj->object->title);
+        $this->assertEquals(Consts::ID, $obj->object->prop1);
+        $this->assertEquals(Consts::TITLE, $obj->object->prop2);
     }
 
     protected function assert4($obj)

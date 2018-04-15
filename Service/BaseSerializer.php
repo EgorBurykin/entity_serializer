@@ -59,7 +59,7 @@ abstract class BaseSerializer
     }
 
     public static function setSamples($samples) {
-        //TODO: write it
+        self::$_samples = $samples;
     }
 
     /**
@@ -93,6 +93,14 @@ abstract class BaseSerializer
         if (!$currentTransformer) {
             return $value;
         }
+        if ($type === 'object' && is_object($currentTransformer)) {
+            $copy = new \stdClass();
+            foreach(get_object_vars($currentTransformer) as $prop => $val) {
+                $copy->$prop = isset($value->$prop)? $value->$prop: null;
+            }
+            return $copy;
+        }
+
         return $this->_transformers[$currentTransformer]->transform($value);
     }
     /**
@@ -264,9 +272,9 @@ abstract class BaseSerializer
      * @return object|string
      */
     public static function getSample($className, $sampleTitle) {
-        if (!isset(self::$_samples[$className.$sampleTitle])) {
+        if (!isset(self::$_samples[$className.':'.$sampleTitle])) {
             return 'all';
         }
-        return self::$_samples[$className.$sampleTitle];
+        return self::$_samples[$className.':'.$sampleTitle];
     }
 }
