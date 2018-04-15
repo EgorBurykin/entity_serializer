@@ -1,14 +1,16 @@
 # Key features and restrictions
 
 * It can serialize Doctrine 2 entities with single column key called "id" to JSON;
-* It is really fast. Uses progressive caching and uses approach allowing to
+* It is really fast. Uses progressive caching and uses approach that allows to
  benefit from OpCache;
-* You can configure which fields will be serialized at runtime by providing sample object tree (other serializers use groups).
-* Easy configurable. You can control samples in one file instead of configuring multiple entities in
+* You can configure which fields will be serialized at runtime by providing sample
+ object (other serializers usually use groups).
+* Easily configurable. You can control samples in one file instead of configuring multiple entities in
 multiple places
 * To tell serializer how to serialize a field or relation you can use transformers.
 # Purpose
-This serializer was created to perform work within daemon process.
+This serializer is created to perform continuous work and is optimized for working
+in a daemon process. Though it is still faster in usual run-and-die processes.
 So check out [benchmark](https://github.com/EgorBurykin/serializer_benchmark). For my device it prints:
 ```
 Scenario 1:
@@ -18,7 +20,7 @@ Scenario 1:
 Jett serializer is ~ 2.6x faster
 
 Scenario 2:
- * Web-socket daemon (continues execution)
+ * Web-socket daemon (continuous execution)
  * One entity to serialize
  * Entity is loaded to doctrine cache once
 Jett serializer is ~ 12.8x faster
@@ -30,7 +32,7 @@ Scenario 3:
 Jett serializer is ~ 4.6x faster
 
 Scenario 4:
- * Web-socket daemon (continues execution)
+ * Web-socket daemon (continuous execution)
  * Collection of entities to serialize
  * Collection is loaded to doctrine cache once
 Jett serializer is ~ 13.5x faster
@@ -175,16 +177,17 @@ jett_json_entity_serializer:
                 }
 ```
 # Transformers
-Serializer proposes transformers as way to define how the property or relation should be
-serialized. There is few transformers included:
-* datetime - used by default for date fields
-* lower
-* upper
-* id - used by default if all map used
-* title
+Serializer uses transformers as a way to define how a property or relation should be
+serialized. There are few transformers included:
+* datetime - used by default for datetime/date fields
+* lower - transforms text
+* upper - transforms text
+* id - used by default if special sample called "all" is used. It replaces entity with its ID
+* title - replaces entity with its title
 
-Also you can define your own transformer easily. Just implement interface and define tagged
-service with tag 'entity_serializer.transformer' or use CallbackTransformer and register it manually:
+Also you can define your own transformer easily. Just implement `TransformerInterface` and 
+define tagged
+service with tag 'entity_serializer.transformer' or use `CallbackTransformer` and register it manually:
 ```php
 $call = function($data) {
     return strtoupper($data);
@@ -192,4 +195,5 @@ $call = function($data) {
 $serializer->addTransformer(new CallbackTransformer($call,'upper'));
 ```
 
-Right now there is no check if transformer can be applied to this property. It's probably coming soon.
+Right now there is no check if transformer can be applied to the property.
+It's probably coming soon.
