@@ -33,6 +33,7 @@ class Serializer implements SerializerInterface
     {
         $generator->generateService();
         $this->_instance = $generator->loadSerializer();
+        $this->_class = $generator->getClassName();
     }
 
     /**
