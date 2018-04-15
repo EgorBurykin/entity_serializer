@@ -34,6 +34,14 @@ class SerializerTest extends KernelTestCase
         $this->serializer = self::$kernel->getContainer()->get('entity_serializer');
     }
 
+    public function testClearCache() {
+        try {
+            $this->serializer->cleanCache();
+        } catch (\Exception $exception) {
+            $this->fail($exception->getMessage());
+        }
+
+    }
     public function testSimpleObjectSerialization()
     {
         $obj = $this->serializer->toPureObject(EntityOne::get());
