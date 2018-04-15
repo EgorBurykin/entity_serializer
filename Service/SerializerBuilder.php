@@ -160,7 +160,7 @@ class SerializerBuilder
         foreach($entities as $entity => $data) {
             if (!isset($data['samples'])) continue;
             foreach($data['samples'] as $name=>$sample) {
-                $samples[$entity.$name] = json_decode($sample);
+                $samples[$entity.':'.$name] = json_decode($sample);
             }
         }
         return $samples;

@@ -30,11 +30,23 @@ jett_json_entity_serializer:
                     {
                         "id": "",
                         "title": "",
+                        "datetime":"",
+                        "date":"",
                         "object": {
-                            "id": "",
-                            "title": ""
+                            "prop1": "",
+                            "prop2": ""
                         }
                     }
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFour:
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFive:
+            samples:
+                extended: >
+                    {
+                        "id": "",
+                        "title": "",
+                        "entity": {
+                            "id": "",
+                            "title": ""
+                        }
+                    }
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix:
