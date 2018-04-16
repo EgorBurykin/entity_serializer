@@ -51,9 +51,9 @@ abstract class BaseSerializer
     protected $_transformers = [];
 
     /**
-     * Cleans cache.
+     * Clears cache.
      */
-    public static function cleanCache()
+    public static function clearCache()
     {
         self::$_cache = [];
     }

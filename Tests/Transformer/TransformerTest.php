@@ -7,36 +7,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Jett\JSONEntitySerializerBundle\Tests;
+namespace Jett\JSONEntitySerializerBundle\Tests\Transformers;
 
-namespace Jett\JSONEntitySerializerBundle\Tests;
-
-use Doctrine\ORM\EntityManager;
-use Jett\JSONEntitySerializerBundle\Service\Serializer;
-use Jett\JSONEntitySerializerBundle\Service\SerializerInterface;
+use Jett\JSONEntitySerializerBundle\Tests\Consts;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityOne;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix;
+use Jett\JSONEntitySerializerBundle\Tests\SerializerTestCase;
 use Jett\JSONEntitySerializerBundle\Transformer\CallbackTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\Common\LowerTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\Common\UpperTransformer;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
-class TransformerTest extends KernelTestCase
+class TransformerTest extends SerializerTestCase
 {
-    /** @var SerializerInterface */
-    private $serializer;
-    /** @var EntityManager */
-    private $em;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $kernel = static::bootKernel();
-        $this->serializer = $kernel->getContainer()->get(Serializer::class);
-        $this->em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
-    }
 
     public function testDateTransformer()
     {

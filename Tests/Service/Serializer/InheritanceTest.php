@@ -15,6 +15,7 @@ use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Manager;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Programmer;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Project;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Team;
+use Jett\JSONEntitySerializerBundle\Tests\SerializerTestCase;
 
 
 class InheritanceTest extends SerializerTestCase

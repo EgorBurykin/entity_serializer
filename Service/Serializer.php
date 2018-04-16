@@ -77,8 +77,8 @@ class Serializer implements SerializerInterface
     /**
      * Cleans cache.
      */
-    public function cleanCache()
+    public function clearCache()
     {
-        $this->_class::cleanCache();
+        $this->_class::clearCache();
     }
 }

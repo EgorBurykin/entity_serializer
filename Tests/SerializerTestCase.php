@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Jett\JSONEntitySerializerBundle\Tests\Service\Serializer;
+namespace Jett\JSONEntitySerializerBundle\Tests;
 
 
 use Doctrine\ORM\EntityManager;
