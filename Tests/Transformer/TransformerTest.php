@@ -68,9 +68,9 @@ class TransformerTest extends KernelTestCase
     public function testOnEntity() {
         $entity = EntitySix::get();
         $sample = (object)['id'=>'','title'=>'', 'entities1'=>'id', 'entities2'=>'title'];
-        $object = $this->serializer->toPureObject($entity, $sample);
-        $this->assertContains(Consts::ID, $object->entities1);
-        $this->assertContains(Consts::TITLE, $object->entities2);
+        $object = $this->serializer->serialize($entity, $sample);
+        $this->assertJsonStringEqualsJsonString('{"id":1,"title":"title","entities1":[1,1],"entities2":["title","title"]}', $object);
+
     }
 
     public function testCallbackTransformer()

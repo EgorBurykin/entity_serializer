@@ -26,7 +26,7 @@ if ($sample === 'id') {
     {% for link in links %}
     if (($sample === 'all' || isset($sample->{{link.name}})) && $val = ${{ object }}->{{link.getter}}()) {
         $innerSample = $sample == 'all'? 'id': $sample->{{link.name}};
-        if (is_string($innerSample) || isset($this->_transformers['{{ link.entity }}'])) {
+        if (is_string($innerSample) && $innerSample !== 'all' || isset($this->_transformers['{{ link.entity }}'])) {
         {% if not link.isSingleValued %}
             ${{ var }}->{{ link.name }} = [];
             foreach($val as $item) {
@@ -39,10 +39,20 @@ if ($sample === 'id') {
         {% if not link.isSingleValued %}
             ${{ var }}_links['{{link.name}}'] = [];
             foreach($val as $item) {
-                ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample, '{{link.entity}}');
+                $class = get_class($item);
+                if (is_object($innerSample) && isset($innerSample->$class)) {
+                    ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample->$class, $class);
+                } else {
+                    ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample, $class);
+                }
             }
         {% else %}
-            ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample, '{{link.entity}}');
+            $class = get_class($val);
+            if (is_object($innerSample) && isset($innerSample->$class)) {
+                ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample->$class, $class);
+            } else {
+                ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample, $class);
+            }
         {% endif %}
         }
     }

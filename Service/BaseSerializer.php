@@ -155,14 +155,15 @@ abstract class BaseSerializer
     /**
      * Invoke node from cache.
      *
-     * @param $id - ID of cached entity
+     * @param $entity -  cached entity
      * @param string $entityFQCN - FQCN of entity
      * @param string $sampleHash - sample hash
      *
      * @return Node|null
      */
-    protected static function cached($id, string $entityFQCN, string $sampleHash)
+    protected static function cached($entity, string $entityFQCN, string $sampleHash)
     {
+        $id = empty($entity->getId())? spl_object_id($entity): $entity->getId();
         return self::$_cache[$entityFQCN][$id][$sampleHash] ?? null;
     }
 
@@ -209,12 +210,13 @@ abstract class BaseSerializer
      * Caches node.
      *
      * @param Node $node
-     * @param $id
+     * @param $entity
      * @param $entityFQCN
      * @param $sampleHash
      */
-    protected static function cache(Node $node, $id, $entityFQCN, $sampleHash)
+    protected static function cache(Node $node, $entity, $entityFQCN, $sampleHash)
     {
+        $id = empty($entity->getId())? spl_object_id($entity): $entity->getId();
         if (!isset(self::$_cache[$entityFQCN])) {
             self::$_cache[$entityFQCN] = [];
         }
@@ -242,11 +244,11 @@ abstract class BaseSerializer
             return null;
         }
         $hash = is_string($sample) ? $sample : spl_object_hash($sample);
-        if ($node = self::cached($entity->getId(), $entityFQCN, $hash)) {
+        if ($node = self::cached($entity, $entityFQCN, $hash)) {
             return $node;
         }
         $node = $this->toPlainJSON($entity, $sample, $entityFQCN);
-        self::cache($node, $entity->getId(), $entityFQCN, $hash);
+        self::cache($node, $entity, $entityFQCN, $hash);
 
         return $node;
     }
