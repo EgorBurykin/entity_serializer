@@ -50,3 +50,48 @@ jett_json_entity_serializer:
                         }
                     }
         Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Department:
+            samples:
+                default: >
+                    {
+                        "id": "",
+                        "title": "",
+                        "employees": {
+                            "Jett\\JSONEntitySerializerBundle\\Tests\\Entity\\Inheritance\\Programmer": {
+                                "id": "",
+                                "name": "",
+                                "level": "",
+                                "team" : "title"
+                            },
+                            "Jett\\JSONEntitySerializerBundle\\Tests\\Entity\\Inheritance\\Manager": {
+                                "id": "",
+                                "name": "",
+                                "projects": "title"
+                            }
+                        }
+                    }
+
+                simple: >
+                    {
+                        "id": "",
+                        "title": "",
+                        "employees": "all"
+                    }
+
+                merged: >
+                    {
+                        "id": "",
+                        "title": "",
+                        "employees": {
+                            "id": "",
+                            "name": "",
+                            "level": "",
+                            "team": "title",
+                            "projects": "title"
+                        }
+                    }
+        Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Employee:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Manager:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Programmer:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Project:
+        Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Team:

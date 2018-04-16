@@ -1,11 +1,13 @@
 <?php
 
-namespace Jett\JSONEntitySerializerBundle\Tests;
+namespace Jett\JSONEntitySerializerBundle\Tests\Service\Serializer;
 
 use Doctrine\ORM\EntityManager;
 use Jett\JSONEntitySerializerBundle\Service\Serializer;
 use Jett\JSONEntitySerializerBundle\Service\SerializerInterface;
 use Jett\JSONEntitySerializerBundle\Tests\app\AppKernel;
+use Jett\JSONEntitySerializerBundle\Tests\Consts;
+use Jett\JSONEntitySerializerBundle\Tests\Entity\Programmer;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFive;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFour;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityOne;
@@ -14,21 +16,8 @@ use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityThree;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityTwo;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class SerializerTest extends KernelTestCase
+class GeneralCasesTest extends SerializerTestCase
 {
-    /** @var SerializerInterface */
-    private $serializer;
-    /** @var EntityManager */
-    private $em;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        static::bootKernel();
-        $this->serializer = self::$kernel->getContainer()->get(Serializer::class);
-
-        $this->em = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
-    }
 
     public function testAccessibleByPublicName() {
         $this->serializer = self::$kernel->getContainer()->get('entity_serializer');
@@ -42,93 +31,63 @@ class SerializerTest extends KernelTestCase
         }
 
     }
+
     public function testSimpleObjectSerialization()
     {
         $obj = $this->serializer->toPureObject(EntityOne::get());
-        $this->assert1($obj);
+        $this->assertEquals(Consts::ID, $obj->id);
+        $this->assertEquals(Consts::TITLE, $obj->title);
     }
 
     public function testObjectWithDatetimeSerialization()
     {
         $obj = $this->serializer->toPureObject(EntityTwo::get());
-        $this->assert1($obj);
-        $this->assert2($obj);
+        $this->assertEquals(Consts::ID, $obj->id);
+        $this->assertEquals(Consts::TITLE, $obj->title);
+        $this->assertEquals(Consts::DATE, $obj->date);
+        $this->assertEquals(Consts::DATE, $obj->datetime);
     }
 
     public function testObjectWithObjectSerialization()
     {
-
-        $obj = $this->serializer->toPureObject(EntityThree::get());
-        $this->assert1($obj);
-        $this->assert2($obj);
-        $this->assert3($obj);
-        //TODO: change object fields
+        $obj = $this->serializer->serialize(EntityThree::get());
+        $json = '{
+            "object": {"prop1":1,"prop2":"title"},
+            "datetime": "2017-01-01T00:00:00+00:00",
+            "date":"2017-01-01T00:00:00+00:00", "id":1, "title":"title"
+        }';
+        $this->assertJsonStringEqualsJsonString($json, $obj);
     }
 
     public function testObjectWithArraySerialization()
     {
         $obj = $this->serializer->toPureObject(EntityFour::get());
-        $this->assert1($obj);
-        $this->assert2($obj);
-        $this->assert4($obj);
-    }
-
-    public function testObjectWithManyToOneRelationSerialization()
-    {
-        $obj = $this->serializer->toPureObject(EntityFive::get());
-        $this->assert1($obj);
-        $this->assert5($obj);
-        $obj = $this->serializer->toPureObject(EntityFive::get(), 'extended');
-        $this->assert1($obj);
-        $this->assertEquals(Consts::ID, $obj->entity->id);
-        $this->assertEquals(Consts::TITLE, $obj->entity->title);
-    }
-
-    public function testObjectWithOneToManyRelationSerialization()
-    {
-        $obj = $this->serializer->toPureObject(EntitySix::get());
-        $this->assert1($obj);
-        $this->assert6($obj);
-    }
-
-    protected static function getKernelClass()
-    {
-        return AppKernel::class;
-    }
-
-    protected function assert1($obj)
-    {
         $this->assertEquals(Consts::ID, $obj->id);
         $this->assertEquals(Consts::TITLE, $obj->title);
-    }
-
-    protected function assert2($obj)
-    {
         $this->assertEquals(Consts::DATE, $obj->date);
         $this->assertEquals(Consts::DATE, $obj->datetime);
-    }
-
-    protected function assert3($obj)
-    {
-        $this->assertEquals(Consts::ID, $obj->object->prop1);
-        $this->assertEquals(Consts::TITLE, $obj->object->prop2);
-    }
-
-    protected function assert4($obj)
-    {
         for ($i = 1; $i <= 3; ++$i) {
             $this->assertEquals(Consts::ID, $obj->{'array'.$i}['id']);
             $this->assertEquals(Consts::TITLE, $obj->{'array'.$i}['title']);
         }
     }
 
-    protected function assert5($obj)
+    public function testObjectWithManyToOneRelationSerialization()
     {
-        $this->assertEquals(Consts::ID, $obj->entity);
+        $obj = $this->serializer->serialize(EntityFive::get());
+        $this->assertJsonStringEqualsJsonString('{"id":1,"title":"title","entity":1}', $obj);
+        $obj = $this->serializer->serialize(EntityFive::get(), 'extended');
+        $this->assertJsonStringEqualsJsonString(
+            '{"id":1,"title":"title","entity":{"id":1,"title":"title"}}',
+            $obj
+        );
     }
 
-    protected function assert6($obj)
+    public function testObjectWithOneToManyRelationSerialization()
     {
+        $obj = $this->serializer->toPureObject(EntitySix::get());
+        $this->assertEquals(Consts::ID, $obj->id);
+        $this->assertEquals(Consts::TITLE, $obj->title);
         for ($i = 1; $i <= 2; ++$i) {
             $this->assertEquals(2, count($obj->{'entities'.$i}));
             $this->assertTrue(is_array($obj->{'entities'.$i}));
