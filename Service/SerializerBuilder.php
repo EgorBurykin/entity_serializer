@@ -20,7 +20,6 @@ use Jett\JSONEntitySerializerBundle\Exception\SampleObjectException;
 use Jett\JSONEntitySerializerBundle\Nodes\FieldNode;
 use Jett\JSONEntitySerializerBundle\Nodes\GeneratorNode;
 use Jett\JSONEntitySerializerBundle\Nodes\RelationNode;
-use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 class SerializerBuilder
@@ -80,7 +79,6 @@ class SerializerBuilder
         if (!$info) {
             //TODO: use check if class exists instead of link type
             return $this->createVirtualFieldNode($propName, '', $method->name);
-
         } elseif ('link' !== $info->type) {
             return $this->createVirtualFieldNode($propName, $info->type, $method->name);
         } elseif ('link' === $info->type) {
@@ -153,19 +151,6 @@ class SerializerBuilder
         return [$fields, $links];
     }
 
-    protected function getSamples()
-    {
-        $samples = [];
-        $entities = $this->_configService->getEntities();
-        foreach($entities as $entity => $data) {
-            if (!isset($data['samples'])) continue;
-            foreach($data['samples'] as $name=>$sample) {
-                $samples[$entity.':'.$name] = json_decode($sample);
-            }
-        }
-        return $samples;
-    }
-
     public function loadSerializer()
     {
         $name = $this->getClassName();
@@ -173,6 +158,7 @@ class SerializerBuilder
         require_once $file;
         $name::setSamples($this->getSamples());
         $instance = new $name();
+
         return $instance;
     }
 
@@ -217,7 +203,9 @@ class SerializerBuilder
     public function checkSamples()
     {
         foreach ($this->_configService->getEntities() as $entity => $data) {
-            if (!isset($data['samples'])) continue;
+            if (!isset($data['samples'])) {
+                continue;
+            }
             $samples = $data['samples'];
 
             foreach ($samples as $name => $sample) {
@@ -233,6 +221,22 @@ class SerializerBuilder
     public function getClassName()
     {
         return 'Serializer'.$this->_configService->getConfigHash();
+    }
+
+    protected function getSamples()
+    {
+        $samples = [];
+        $entities = $this->_configService->getEntities();
+        foreach ($entities as $entity => $data) {
+            if (!isset($data['samples'])) {
+                continue;
+            }
+            foreach ($data['samples'] as $name => $sample) {
+                $samples[$entity.':'.$name] = json_decode($sample);
+            }
+        }
+
+        return $samples;
     }
 
     protected function fileShouldBeRebuilt()

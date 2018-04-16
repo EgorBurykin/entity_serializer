@@ -197,3 +197,50 @@ $serializer->addTransformer(new CallbackTransformer($call,'upper'));
 
 Right now there is no check if transformer can be applied to the property.
 It's probably coming soon.
+## Inheritance
+There is few ways how you can provide sample for entities which inherit each other:
+```yaml
+App\Entity\Programmer:
+App\Entity\Manager:
+App\Entity\Department:
+    samples:
+        # you can provide different samples for each entity type
+        default: >
+            {
+                "id": "",
+                "title": "",
+                "employees": {
+                    "App\\Entity\\Programmer": {
+                        "id": "",
+                        "name": "",
+                        "level": "",
+                        "team" : "title"
+                    },
+                    "App\\Entity\\Manager": {
+                        "id": "",
+                        "name": "",
+                        "projects": "title"
+                    }
+                }
+            }
+        # or you can use sample "all"
+        simple: >
+            {
+                "id": "",
+                "title": "",
+                "employees": "all"
+            }
+        # or you can provide merged sample which contains all fields
+        merged: >
+            {
+                "id": "",
+                "title": "",
+                "employees": {
+                    "id": "",
+                    "name": "",
+                    "level": "",
+                    "team": "title",
+                    "projects": "title"
+                }
+            }
+```

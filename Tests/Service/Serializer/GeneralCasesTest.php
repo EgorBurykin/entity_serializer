@@ -2,34 +2,29 @@
 
 namespace Jett\JSONEntitySerializerBundle\Tests\Service\Serializer;
 
-use Doctrine\ORM\EntityManager;
-use Jett\JSONEntitySerializerBundle\Service\Serializer;
-use Jett\JSONEntitySerializerBundle\Service\SerializerInterface;
-use Jett\JSONEntitySerializerBundle\Tests\app\AppKernel;
 use Jett\JSONEntitySerializerBundle\Tests\Consts;
-use Jett\JSONEntitySerializerBundle\Tests\Entity\Programmer;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFive;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityFour;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityOne;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntitySix;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityThree;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\EntityTwo;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Jett\JSONEntitySerializerBundle\Tests\SerializerTestCase;
 
 class GeneralCasesTest extends SerializerTestCase
 {
-
-    public function testAccessibleByPublicName() {
+    public function testAccessibleByPublicName()
+    {
         $this->serializer = self::$kernel->getContainer()->get('entity_serializer');
     }
 
-    public function testClearCache() {
+    public function testClearCache()
+    {
         try {
-            $this->serializer->cleanCache();
+            $this->serializer->clearCache();
         } catch (\Exception $exception) {
             $this->fail($exception->getMessage());
         }
-
     }
 
     public function testSimpleObjectSerialization()
@@ -52,9 +47,11 @@ class GeneralCasesTest extends SerializerTestCase
     {
         $obj = $this->serializer->serialize(EntityThree::get());
         $json = '{
-            "object": {"prop1":1,"prop2":"title"},
+            "object": {"prop1": 1,"prop2": "title"},
             "datetime": "2017-01-01T00:00:00+00:00",
-            "date":"2017-01-01T00:00:00+00:00", "id":1, "title":"title"
+            "date": "2017-01-01T00:00:00+00:00",
+            "id": 1,
+            "title": "title"
         }';
         $this->assertJsonStringEqualsJsonString($json, $obj);
     }

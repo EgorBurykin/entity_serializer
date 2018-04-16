@@ -39,7 +39,7 @@ if ($sample === 'id') {
         {% if not link.isSingleValued %}
             ${{ var }}_links['{{link.name}}'] = [];
             foreach($val as $item) {
-                $class = get_class($item);
+                $class = ClassUtils::getRealClass(get_class($item));
                 if (is_object($innerSample) && isset($innerSample->$class)) {
                     ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample->$class, $class);
                 } else {
@@ -47,7 +47,7 @@ if ($sample === 'id') {
                 }
             }
         {% else %}
-            $class = get_class($val);
+            $class = ClassUtils::getRealClass(get_class($val));
             if (is_object($innerSample) && isset($innerSample->$class)) {
                 ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample->$class, $class);
             } else {

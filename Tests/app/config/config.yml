@@ -90,6 +90,24 @@ jett_json_entity_serializer:
                             "projects": "title"
                         }
                     }
+                extended: >
+                    {
+                        "id": "",
+                        "title": "",
+                        "employees": {
+                            "id": "",
+                            "name": "",
+                            "level": "",
+                            "team": {
+                                "id": "",
+                                "title": ""
+                            },
+                            "projects": {
+                                "id":""
+                            }
+                        }
+                    }
+
         Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Employee:
         Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Manager:
         Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Programmer:

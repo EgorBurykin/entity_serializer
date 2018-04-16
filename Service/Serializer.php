@@ -24,7 +24,9 @@ class Serializer implements SerializerInterface
 
     /**
      * Serializer constructor.
+     *
      * @param SerializerBuilder $generator
+     *
      * @throws \Jett\JSONEntitySerializerBundle\Exception\ClassNotFoundException
      * @throws \Jett\JSONEntitySerializerBundle\Exception\RenderFailedException
      * @throws \Jett\JSONEntitySerializerBundle\Exception\SampleObjectException
@@ -37,7 +39,8 @@ class Serializer implements SerializerInterface
     }
 
     /**
-     * Adds transformers to pool
+     * Adds transformers to pool.
+     *
      * @param TransformerInterface $transformer
      */
     public function addTransformer(TransformerInterface $transformer)
@@ -77,8 +80,8 @@ class Serializer implements SerializerInterface
     /**
      * Cleans cache.
      */
-    public function cleanCache()
+    public function clearCache()
     {
-        $this->_class::cleanCache();
+        $this->_class::clearCache();
     }
 }

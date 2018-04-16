@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Department
 {
-
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -58,6 +57,7 @@ class Department
     public function addEmployee(Employee $block)
     {
         $this->employees->add($block);
+
         return $this;
     }
 
@@ -76,15 +76,13 @@ class Department
 
     /**
      * @param mixed $title
+     *
      * @return self
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
-
-
-
-
 }

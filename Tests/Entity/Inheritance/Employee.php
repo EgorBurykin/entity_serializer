@@ -54,10 +54,12 @@ abstract class Employee
 
     /**
      * @param mixed $name
+     * @return Employee
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -71,13 +73,13 @@ abstract class Employee
 
     /**
      * @param mixed $department
+     *
      * @return self
      */
     public function setDepartment($department)
     {
         $this->department = $department;
+
         return $this;
     }
-
-
 }

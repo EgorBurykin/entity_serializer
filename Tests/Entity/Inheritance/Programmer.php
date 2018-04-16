@@ -36,11 +36,13 @@ class Programmer extends Employee
 
     /**
      * @param mixed $level
+     *
      * @return self
      */
     public function setLevel($level)
     {
         $this->level = $level;
+
         return $this;
     }
 
@@ -54,13 +56,13 @@ class Programmer extends Employee
 
     /**
      * @param mixed $team
+     *
      * @return self
      */
     public function setTeam($team)
     {
         $this->team = $team;
+
         return $this;
     }
-
-
 }

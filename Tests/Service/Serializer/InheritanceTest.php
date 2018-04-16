@@ -9,17 +9,15 @@
 
 namespace Jett\JSONEntitySerializerBundle\Tests\Service\Serializer;
 
-
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Department;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Manager;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Programmer;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Project;
 use Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance\Team;
-
+use Jett\JSONEntitySerializerBundle\Tests\SerializerTestCase;
 
 class InheritanceTest extends SerializerTestCase
 {
-
     public function testSimpleObjectSerialization()
     {
         $team = new Team();

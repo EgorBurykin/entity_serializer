@@ -11,8 +11,6 @@ namespace Jett\JSONEntitySerializerBundle\Transformer;
 /**
  * This is common interface for transformers. We can use transformer when provide sample object or configure
  * transformers section of bundle.
- *
- * @package Jett\JSONEntitySerializerBundle\Transformer
  */
 interface TransformerInterface
 {

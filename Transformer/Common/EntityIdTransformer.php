@@ -9,12 +9,10 @@
 
 namespace Jett\JSONEntitySerializerBundle\Transformer\Common;
 
-
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class EntityIdTransformer implements TransformerInterface
 {
-
     public function transform($data)
     {
         return $data->getId();
@@ -24,5 +22,4 @@ class EntityIdTransformer implements TransformerInterface
     {
         return 'id';
     }
-
 }
