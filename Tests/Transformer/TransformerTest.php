@@ -18,10 +18,8 @@ use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\Common\LowerTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\Common\UpperTransformer;
 
-
 class TransformerTest extends SerializerTestCase
 {
-
     public function testDateTransformer()
     {
         $transformer = new DateTimeTransformer();
@@ -41,33 +39,34 @@ class TransformerTest extends SerializerTestCase
         $this->assertEquals(strtolower(Consts::TITLE), $tr->transform(Consts::TITLE));
     }
 
-    public function testOnSimpleFields() {
-        $sample = (object)['id'=>'','title'=>'upper'];
+    public function testOnSimpleFields()
+    {
+        $sample = (object) ['id' => '', 'title' => 'upper'];
         $entity = EntityOne::get();
         $object = $this->serializer->toPureObject($entity, $sample);
         $this->assertNotEmpty($object->title);
         $this->assertEquals(strtoupper(Consts::TITLE), $object->title);
     }
 
-    public function testOnEntity() {
+    public function testOnEntity()
+    {
         $entity = EntitySix::get();
-        $sample = (object)['id'=>'','title'=>'', 'entities1'=>'id', 'entities2'=>'title'];
+        $sample = (object) ['id' => '', 'title' => '', 'entities1' => 'id', 'entities2' => 'title'];
         $object = $this->serializer->serialize($entity, $sample);
         $this->assertJsonStringEqualsJsonString('{"id":1,"title":"title","entities1":[1,1],"entities2":["title","title"]}', $object);
-
     }
 
     public function testCallbackTransformer()
     {
-        $call = function($val) {
-            return substr($val,0,1);
+        $call = function ($val) {
+            return substr($val, 0, 1);
         };
         $tr = new CallbackTransformer($call, 'firstChar');
         $this->serializer->addTransformer($tr);
-        $sample = (object)['id'=>'','title'=>'firstChar'];
+        $sample = (object) ['id' => '', 'title' => 'firstChar'];
         $entity = EntityOne::get();
         $object = $this->serializer->toPureObject($entity, $sample);
         $this->assertNotEmpty($object->title);
-        $this->assertEquals(substr(Consts::TITLE,0,1), $object->title);
+        $this->assertEquals(substr(Consts::TITLE, 0, 1), $object->title);
     }
 }

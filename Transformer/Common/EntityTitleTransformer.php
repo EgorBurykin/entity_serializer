@@ -9,7 +9,6 @@
 
 namespace Jett\JSONEntitySerializerBundle\Transformer\Common;
 
-
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class EntityTitleTransformer implements TransformerInterface
@@ -23,5 +22,4 @@ class EntityTitleTransformer implements TransformerInterface
     {
         return 'title';
     }
-
 }

@@ -13,19 +13,18 @@ use Jett\JSONEntitySerializerBundle\Tests\SerializerTestCase;
 
 class GeneralCasesTest extends SerializerTestCase
 {
-
     public function testAccessibleByPublicName()
     {
         $this->serializer = self::$kernel->getContainer()->get('entity_serializer');
     }
 
-    public function testClearCache() {
+    public function testClearCache()
+    {
         try {
             $this->serializer->clearCache();
         } catch (\Exception $exception) {
             $this->fail($exception->getMessage());
         }
-
     }
 
     public function testSimpleObjectSerialization()

@@ -9,11 +9,11 @@
 
 namespace Jett\JSONEntitySerializerBundle\Transformer\Common;
 
-
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class DateTimeTransformer implements TransformerInterface
 {
+    const TYPES = ['datetime', 'date', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'];
 
     private $format;
 
@@ -22,13 +22,12 @@ class DateTimeTransformer implements TransformerInterface
         $this->format = $format;
     }
 
-    const TYPES = ['datetime','date','datetime_immutable','datetimetz','datetimetz_immutable'];
-
     public function transform($data)
     {
         if (!$data instanceof \DateTime) {
             return null;
         }
+
         return $data->format($this->format);
     }
 
@@ -36,5 +35,4 @@ class DateTimeTransformer implements TransformerInterface
     {
         return 'datetime';
     }
-
 }

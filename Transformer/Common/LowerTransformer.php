@@ -9,12 +9,10 @@
 
 namespace Jett\JSONEntitySerializerBundle\Transformer\Common;
 
-
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class LowerTransformer implements TransformerInterface
 {
-
     public function transform($data)
     {
         return strtolower($data);
@@ -24,5 +22,4 @@ class LowerTransformer implements TransformerInterface
     {
         return 'lower';
     }
-
 }

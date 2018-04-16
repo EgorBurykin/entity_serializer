@@ -8,6 +8,7 @@
  */
 
 namespace Jett\JSONEntitySerializerBundle\Service;
+
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 /**
@@ -24,5 +25,4 @@ interface SerializerInterface
     public function clearCache();
 
     public function addTransformer(TransformerInterface $transformer);
-
 }

@@ -9,12 +9,10 @@
 
 namespace Jett\JSONEntitySerializerBundle\Transformer\Common;
 
-
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 class UpperTransformer implements TransformerInterface
 {
-
     public function transform($data)
     {
         return strtoupper($data);
@@ -24,5 +22,4 @@ class UpperTransformer implements TransformerInterface
     {
         return 'upper';
     }
-
 }

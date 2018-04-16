@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class TransformersCompilerPass implements CompilerPassInterface
 {
-
     const TAG = 'entity_serializer.transformer';
 
     public function process(ContainerBuilder $container)
@@ -25,9 +24,8 @@ class TransformersCompilerPass implements CompilerPassInterface
         }
         $builder = $container->getDefinition(Serializer::class);
         $services = $container->findTaggedServiceIds(self::TAG);
-        foreach($services as $id => $tags) {
+        foreach ($services as $id => $tags) {
             $builder->addMethodCall('addTransformer', [$container->getDefinition($id)]);
         }
     }
-
 }

@@ -9,7 +9,6 @@
 
 namespace Jett\JSONEntitySerializerBundle\Tests;
 
-
 use Doctrine\ORM\EntityManager;
 use Jett\JSONEntitySerializerBundle\Service\Serializer;
 use Jett\JSONEntitySerializerBundle\Service\SerializerInterface;
@@ -23,11 +22,6 @@ class SerializerTestCase extends KernelTestCase
     /** @var EntityManager */
     protected $em;
 
-    protected static function getKernelClass()
-    {
-        return AppKernel::class;
-    }
-
     protected function setUp()
     {
         parent::setUp();
@@ -37,4 +31,8 @@ class SerializerTestCase extends KernelTestCase
         $this->em = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
     }
 
+    protected static function getKernelClass()
+    {
+        return AppKernel::class;
+    }
 }

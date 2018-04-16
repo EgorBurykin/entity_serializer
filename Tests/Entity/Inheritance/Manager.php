@@ -8,8 +8,8 @@
  */
 
 namespace Jett\JSONEntitySerializerBundle\Tests\Entity\Inheritance;
-use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Manager extends Employee
 {
-
     /**
      * @ORM\ManyToMany(targetEntity="Project")
      */
@@ -39,6 +38,7 @@ class Manager extends Employee
     public function addProject(Project $project)
     {
         $this->projects->add($project);
+
         return $this;
     }
 
@@ -46,5 +46,4 @@ class Manager extends Employee
     {
         $this->projects->removeElement($project);
     }
-
 }

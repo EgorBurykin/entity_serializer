@@ -11,7 +11,6 @@ namespace Jett\JSONEntitySerializerBundle\Service;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
-use Jett\JSONEntitySerializerBundle\Exception\AbstractStaticCallException;
 use Jett\JSONEntitySerializerBundle\Nodes\Node;
 use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
@@ -58,12 +57,14 @@ abstract class BaseSerializer
         self::$_cache = [];
     }
 
-    public static function setSamples($samples) {
+    public static function setSamples($samples)
+    {
         self::$_samples = $samples;
     }
 
     /**
-     * Set transformers
+     * Set transformers.
+     *
      * @param TransformerInterface[] $transformers
      */
     public function setTransformers($transformers)
@@ -72,10 +73,12 @@ abstract class BaseSerializer
     }
 
     /**
-     * Adds transformer to pool
+     * Adds transformer to pool.
+     *
      * @param TransformerInterface $transformer
      */
-    public function addTransformer(TransformerInterface $transformer) {
+    public function addTransformer(TransformerInterface $transformer)
+    {
         $this->_transformers[$transformer->getId()] = $transformer;
     }
 
@@ -83,26 +86,29 @@ abstract class BaseSerializer
      * @param $value
      * @param $type
      * @param $currentTransformer - transformer name
+     *
      * @return mixed - transformed value
      */
     public function transform($value, $type, $currentTransformer)
     {
-        if (in_array($type, DateTimeTransformer::TYPES) && !$currentTransformer) {
+        if (in_array($type, DateTimeTransformer::TYPES, true) && !$currentTransformer) {
             return $this->_transformers['datetime']->transform($value);
         }
         if (!$currentTransformer) {
             return $value;
         }
-        if ($type === 'object' && is_object($currentTransformer)) {
+        if ('object' === $type && is_object($currentTransformer)) {
             $copy = new \stdClass();
-            foreach(get_object_vars($currentTransformer) as $prop => $val) {
-                $copy->$prop = isset($value->$prop)? $value->$prop: null;
+            foreach (get_object_vars($currentTransformer) as $prop => $val) {
+                $copy->$prop = $value->$prop ?? null;
             }
+
             return $copy;
         }
 
         return $this->_transformers[$currentTransformer]->transform($value);
     }
+
     /**
      * Converts entity to plain object containing properties according to sample.
      *
@@ -153,6 +159,24 @@ abstract class BaseSerializer
     }
 
     /**
+     * Returns sample object for className according to sample object's title
+     * This method will be generated.
+     *
+     * @param $className
+     * @param $sampleTitle
+     *
+     * @return object|string
+     */
+    public static function getSample($className, $sampleTitle)
+    {
+        if (!isset(self::$_samples[$className.':'.$sampleTitle])) {
+            return 'all';
+        }
+
+        return self::$_samples[$className.':'.$sampleTitle];
+    }
+
+    /**
      * Invoke node from cache.
      *
      * @param $entity -  cached entity
@@ -163,7 +187,8 @@ abstract class BaseSerializer
      */
     protected static function cached($entity, string $entityFQCN, string $sampleHash)
     {
-        $id = empty($entity->getId())? spl_object_id($entity): $entity->getId();
+        $id = empty($entity->getId()) ? spl_object_id($entity) : $entity->getId();
+
         return self::$_cache[$entityFQCN][$id][$sampleHash] ?? null;
     }
 
@@ -216,7 +241,7 @@ abstract class BaseSerializer
      */
     protected static function cache(Node $node, $entity, $entityFQCN, $sampleHash)
     {
-        $id = empty($entity->getId())? spl_object_id($entity): $entity->getId();
+        $id = empty($entity->getId()) ? spl_object_id($entity) : $entity->getId();
         if (!isset(self::$_cache[$entityFQCN])) {
             self::$_cache[$entityFQCN] = [];
         }
@@ -263,20 +288,4 @@ abstract class BaseSerializer
      * @return Node
      */
     abstract protected function toPlainJSON($entity, &$sample, string $entityFQCN);
-
-    /**
-     * Returns sample object for className according to sample object's title
-     * This method will be generated.
-     *
-     * @param $className
-     * @param $sampleTitle
-     *
-     * @return object|string
-     */
-    public static function getSample($className, $sampleTitle) {
-        if (!isset(self::$_samples[$className.':'.$sampleTitle])) {
-            return 'all';
-        }
-        return self::$_samples[$className.':'.$sampleTitle];
-    }
 }

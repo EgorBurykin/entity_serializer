@@ -9,16 +9,15 @@
 
 namespace Jett\JSONEntitySerializerBundle\Transformer;
 
-
 class CallbackTransformer implements TransformerInterface
 {
-
     private $callback;
 
     private $id;
 
     /**
      * EntityIdTransformer constructor.
+     *
      * @param callable $callback
      * @param $id
      */
@@ -31,6 +30,7 @@ class CallbackTransformer implements TransformerInterface
     public function transform($data)
     {
         $call = $this->callback;
+
         return $call($data);
     }
 
@@ -38,5 +38,4 @@ class CallbackTransformer implements TransformerInterface
     {
         return $this->id;
     }
-
 }
