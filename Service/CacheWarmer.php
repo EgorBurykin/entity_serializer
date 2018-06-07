@@ -18,7 +18,7 @@ class CacheWarmer implements CacheWarmerInterface
 {
     private $_generator;
 
-    public function __construct(ClassGenerator $generator)
+    public function __construct(SerializerBuilder $generator)
     {
         $this->_generator = $generator;
     }

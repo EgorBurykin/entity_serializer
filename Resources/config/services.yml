@@ -3,7 +3,7 @@ services:
     Jett\JSONEntitySerializerBundle\Service\Serializer:
         public: true
         arguments:
-            - '@Jett\JSONEntitySerializerBundle\Service\ClassGenerator'
+            - '@Jett\JSONEntitySerializerBundle\Service\SerializerBuilder'
 
     entity_serializer:
         alias:  Jett\JSONEntitySerializerBundle\Service\Serializer
@@ -20,7 +20,7 @@ services:
             - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
             - '@doctrine.orm.entity_manager'
 
-    Jett\JSONEntitySerializerBundle\Service\ClassGenerator:
+    Jett\JSONEntitySerializerBundle\Service\SerializerBuilder:
         arguments:
             - '@Jett\JSONEntitySerializerBundle\Info\InfoProvider'
             - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
@@ -29,7 +29,11 @@ services:
 
     Jett\JSONEntitySerializerBundle\Service\CacheWarmer:
         arguments:
-            - '@Jett\JSONEntitySerializerBundle\Service\ClassGenerator'
+            - '@Jett\JSONEntitySerializerBundle\Service\SerializerBuilder'
         tags:
             - kernel.cache_warmer
 
+    Jett\JSONEntitySerializerBundle\Transformer\Common\:
+        resource: '../../Transformer/Common/'
+        tags:
+            - entity_serializer.transformer

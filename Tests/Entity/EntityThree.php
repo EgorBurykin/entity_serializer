@@ -34,7 +34,7 @@ class EntityThree extends EntityTwo
     public static function get()
     {
         $o = parent::get();
-        $o->setObject((object) ['id' => Consts::ID, 'title' => Consts::TITLE]);
+        $o->setObject((object) ['prop1' => Consts::ID, 'prop2' => Consts::TITLE]);
 
         return $o;
     }

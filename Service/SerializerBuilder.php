@@ -9,14 +9,13 @@
 
 namespace Jett\JSONEntitySerializerBundle\Service;
 
-
 use Jett\JSONEntitySerializerBundle\Exception\ClassNotFoundException;
 use Jett\JSONEntitySerializerBundle\Exception\RenderFailedException;
 use Jett\JSONEntitySerializerBundle\Exception\SampleObjectException;
 use Jett\JSONEntitySerializerBundle\Info\InfoProvider;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ClassGenerator
+class SerializerBuilder
 {
 
     protected $_fs;
@@ -43,8 +42,10 @@ class ClassGenerator
         $name = $this->getClassName();
         $file = $this->_cachePath.DIRECTORY_SEPARATOR.$name.'.php';
         require_once $file;
+        $name::setSamples($this->getSamples());
+        $instance = new $name();
 
-        return new $name();
+        return $instance;
     }
 
     /**
@@ -87,8 +88,11 @@ class ClassGenerator
      */
     public function checkSamples()
     {
-        foreach ($this->_configService->getEntities() as $entity => $attributes) {
-            $samples = $attributes['samples'];
+        foreach ($this->_configService->getEntities() as $entity => $data) {
+            if (!isset($data['samples'])) {
+                continue;
+            }
+            $samples = $data['samples'];
 
             foreach ($samples as $name => $sample) {
                 $obj = json_decode($sample);
@@ -100,9 +104,25 @@ class ClassGenerator
         }
     }
 
-    protected function getClassName()
+    public function getClassName()
     {
         return 'Serializer'.$this->_configService->getConfigHash();
+    }
+
+    protected function getSamples()
+    {
+        $samples = [];
+        $entities = $this->_configService->getEntities();
+        foreach ($entities as $entity => $data) {
+            if (!isset($data['samples'])) {
+                continue;
+            }
+            foreach ($data['samples'] as $name => $sample) {
+                $samples[$entity.':'.$name] = json_decode($sample);
+            }
+        }
+
+        return $samples;
     }
 
     protected function fileShouldBeRebuilt()
@@ -166,11 +186,8 @@ class ClassGenerator
     {
         try {
             list($fields, $links) = $this->_infoProvider->getInfoForClass($className);
-            $name = explode('/', $className);
-            $short_name = end($name);
-            $class = ucfirst($short_name).'Serializer';
+
             $content = $this->render('function.php.twig', [
-                'class' => $class,
                 'fields' => $fields,
                 'links' => $links,
                 'var' => 'var',

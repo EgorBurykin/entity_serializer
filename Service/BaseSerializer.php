@@ -12,6 +12,8 @@ namespace Jett\JSONEntitySerializerBundle\Service;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Jett\JSONEntitySerializerBundle\Nodes\Node;
+use Jett\JSONEntitySerializerBundle\Transformer\Common\DateTimeTransformer;
+use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 /**
  * This class serializes doctrine classic entity to JSON.
@@ -37,7 +39,7 @@ use Jett\JSONEntitySerializerBundle\Nodes\Node;
  *
  * @todo Use Transformers
  */
-abstract class BaseSerializer implements SerializerInterface
+abstract class BaseSerializer
 {
     public static $_cache = [];
 
@@ -45,12 +47,66 @@ abstract class BaseSerializer implements SerializerInterface
 
     protected static $_samples = [];
 
+    protected $_transformers = [];
+
     /**
-     * Cleans cache.
+     * Clears cache.
      */
-    public function cleanCache()
+    public static function clearCache()
     {
         self::$_cache = [];
+    }
+
+    public static function setSamples($samples)
+    {
+        self::$_samples = $samples;
+    }
+
+    /**
+     * Set transformers.
+     *
+     * @param TransformerInterface[] $transformers
+     */
+    public function setTransformers($transformers)
+    {
+        $this->_transformers = $transformers;
+    }
+
+    /**
+     * Adds transformer to pool.
+     *
+     * @param TransformerInterface $transformer
+     */
+    public function addTransformer(TransformerInterface $transformer)
+    {
+        $this->_transformers[$transformer->getId()] = $transformer;
+    }
+
+    /**
+     * @param $value
+     * @param $type
+     * @param $currentTransformer - transformer name
+     *
+     * @return mixed - transformed value
+     */
+    public function transform($value, $type, $currentTransformer)
+    {
+        if (in_array($type, DateTimeTransformer::TYPES, true) && !$currentTransformer) {
+            return $this->_transformers['datetime']->transform($value);
+        }
+        if (!$currentTransformer) {
+            return $value;
+        }
+        if ('object' === $type && is_object($currentTransformer)) {
+            $copy = new \stdClass();
+            foreach (get_object_vars($currentTransformer) as $prop => $val) {
+                $copy->$prop = $value->$prop ?? null;
+            }
+
+            return $copy;
+        }
+
+        return $this->_transformers[$currentTransformer]->transform($value);
     }
 
     /**
@@ -69,7 +125,7 @@ abstract class BaseSerializer implements SerializerInterface
         if (is_array($entity) || $entity instanceof Collection) {
             $objects = [];
             foreach ($entity as $o) {
-                $objects[] = static::toPureObject($o, $sample);
+                $objects[] = $this->toPureObject($o, $sample);
             }
 
             return $objects;
@@ -79,11 +135,11 @@ abstract class BaseSerializer implements SerializerInterface
             $sample = 'default';
         }
         if (is_string($sample)) {
-            $sample = 'all' === $sample ? $sample : static::getSample($class, $sample);
+            $sample = 'all' === $sample ? $sample : $this->getSample($class, $sample);
         }
-        $node = static::getNode($entity, $sample, $class);
+        $node = $this->getNode($entity, $sample, $class);
 
-        return self::compile($node, $sample);
+        return $this->compile($node, $sample);
     }
 
     /**
@@ -103,16 +159,36 @@ abstract class BaseSerializer implements SerializerInterface
     }
 
     /**
+     * Returns sample object for className according to sample object's title
+     * This method will be generated.
+     *
+     * @param $className
+     * @param $sampleTitle
+     *
+     * @return object|string
+     */
+    public static function getSample($className, $sampleTitle)
+    {
+        if (!isset(self::$_samples[$className.':'.$sampleTitle])) {
+            return 'all';
+        }
+
+        return self::$_samples[$className.':'.$sampleTitle];
+    }
+
+    /**
      * Invoke node from cache.
      *
-     * @param $id - ID of cached entity
+     * @param $entity -  cached entity
      * @param string $entityFQCN - FQCN of entity
      * @param string $sampleHash - sample hash
      *
      * @return Node|null
      */
-    protected static function cached($id, string $entityFQCN, string $sampleHash)
+    protected static function cached($entity, string $entityFQCN, string $sampleHash)
     {
+        $id = empty($entity->getId()) ? spl_object_id($entity) : $entity->getId();
+
         return self::$_cache[$entityFQCN][$id][$sampleHash] ?? null;
     }
 
@@ -121,9 +197,9 @@ abstract class BaseSerializer implements SerializerInterface
      *
      * @param Node          $node
      * @param string|object $sample
-     * @return object
+     * @return null|object
      */
-    protected static function compile(Node $node = null, $sample)
+    protected function compile(Node $node = null, $sample)
     {
         if (!$node) {
             return null;
@@ -137,16 +213,16 @@ abstract class BaseSerializer implements SerializerInterface
                 $obj->$key = [];
                 foreach ($link as $item) {
                     if ('all' === $sample) {
-                        $obj->$key[] = self::compile($item, 'id');
+                        $obj->$key[] = $this->compile($item, 'id');
                     } elseif ('id' !== $sample) {
                         $obj->$key[] = self::compile($item, $sample->$key);
                     }
                 }
             } else {
                 if ('all' === $sample) {
-                    $obj->$key = self::compile($link, 'id');
+                    $obj->$key = $this->compile($link, 'id');
                 } elseif ('id' !== $sample) {
-                    $obj->$key = self::compile($link, $sample->$key);
+                    $obj->$key = $this->compile($link, $sample->$key);
                 }
             }
         }
@@ -158,12 +234,13 @@ abstract class BaseSerializer implements SerializerInterface
      * Caches node.
      *
      * @param Node $node
-     * @param $id
+     * @param $entity
      * @param $entityFQCN
      * @param $sampleHash
      */
-    protected static function cache(Node $node, $id, $entityFQCN, $sampleHash)
+    protected static function cache(Node $node, $entity, $entityFQCN, $sampleHash)
     {
+        $id = empty($entity->getId()) ? spl_object_id($entity) : $entity->getId();
         if (!isset(self::$_cache[$entityFQCN])) {
             self::$_cache[$entityFQCN] = [];
         }
@@ -185,17 +262,17 @@ abstract class BaseSerializer implements SerializerInterface
      *
      * @return Node|null
      */
-    protected static function getNode($entity, &$sample, $entityFQCN)
+    protected function getNode($entity, &$sample, $entityFQCN)
     {
         if (empty($entity)) {
             return null;
         }
         $hash = is_string($sample) ? $sample : spl_object_hash($sample);
-        if ($node = self::cached($entity->getId(), $entityFQCN, $hash)) {
+        if ($node = self::cached($entity, $entityFQCN, $hash)) {
             return $node;
         }
-        $node = static::toPlainJSON($entity, $sample, $entityFQCN);
-        self::cache($node, $entity->getId(), $entityFQCN, $hash);
+        $node = $this->toPlainJSON($entity, $sample, $entityFQCN);
+        self::cache($node, $entity, $entityFQCN, $hash);
 
         return $node;
     }
@@ -209,20 +286,5 @@ abstract class BaseSerializer implements SerializerInterface
      *
      * @return Node
      */
-    protected static function toPlainJSON($entity, &$sample, string $entityFQCN)
-    {
-    }
-
-    /**
-     * Returns sample object for className according to sample object's title
-     * This method will be generated.
-     *
-     * @param $className
-     * @param $sampleTitle
-     *
-     * @return object
-     */
-    protected static function getSample($className, $sampleTitle)
-    {
-    }
+    abstract protected function toPlainJSON($entity, &$sample, string $entityFQCN);
 }

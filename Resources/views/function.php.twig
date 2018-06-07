@@ -6,48 +6,55 @@ if ($sample === 'id') {
     {% for field in fields %}
         if ($sample === 'all' || isset($sample->{{field.name}})) {
             $val = ${{ object }}->{{field.getter}}();
-        {% if field.type in ['binary','blob'] %}
-        {% elseif field.type in ['datetime','date','datetime_immutable','datetimetz','datetimetz_immutable'] %}
-            if($val) ${{ var }}->{{field.name}} = $val->format(DATE_W3C);
-        {% elseif field.type in ['time','time_immutable'] %}
-            if($val) ${{ var }}->{{field.name}} = $val->format('H:i:s');
-        {% elseif field.type == 'dateinterval' %}
-            if($val) {
-                ${{ var }}->{{field.name}} = str_replace(
-                    ["M0S", "H0M", "D0H", "M0D", "Y0M", "P0Y"],
-                    ["M", "H", "D", "M", "Y0M", "P"],
-                    $val->format("P%yY%mM%dD%hH%iM%sS")
-                );
+            if ($val) {
+                {% if field.type != 'embed' %}
+                    ${{ var }}->{{field.name}} = $this->transform($val, '{{ field.type }}', $sample === 'all'? null: $sample->{{ field.name }});
+                {% else  %}
+                    $_{{ object }} = $val;
+                    {% include 'function.php.twig'
+                        with {'var':'_'~var,
+                        'fields': field.fields,
+                        'links': field.relations,
+                        'object': '_'~object,
+                        'return': false
+                    }%}
+                    ${{ var }}->{{ field.name }} = $_{{ var }};
+                {% endif %}
             }
-        {% elseif field.type == 'embed' %}
-            if($val) {
-                $_{{ object }} = $val;
-                {% include '@JettJSONEntitySerializerBundle/Resources/views/function.php.twig'
-                    with {'var':'_'~var,
-                    'fields': field.fields,
-                    'links': field.relations,
-                    'object': '_'~object,
-                    'return': false
-                }%}
-                ${{ var }}->{{ field.name }} = $_{{ var }};
-            }
-        {% else %}
-            ${{ var }}->{{field.name}} = $val;
-        {% endif %}
         }
     {% endfor%}
     {% for link in links %}
     if (($sample === 'all' || isset($sample->{{link.name}})) && $val = ${{ object }}->{{link.getter}}()) {
-        {% if link.isSingleValued == false %}
-            ${{ var }}_links['{{link.name}}'] = [];
+        $innerSample = $sample == 'all'? 'id': $sample->{{link.name}};
+        if (is_string($innerSample) && $innerSample !== 'all' || isset($this->_transformers['{{ link.entity }}'])) {
+        {% if not link.isSingleValued %}
+            ${{ var }}->{{ link.name }} = [];
             foreach($val as $item) {
-                $innerSample = $sample == 'all'? 'id': $sample->{{link.name}};
-                ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample, '{{link.entity}}');
+                ${{ var }}->{{ link.name }}[] = $this->transform($item, '{{ link.entity }}', is_string($innerSample)? $innerSample: null);
             }
         {% else %}
-            $innerSample = $sample === 'all'? 'id': $sample->{{link.name}};
-            ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample, '{{link.entity}}');
+            ${{ var }}->{{ link.name }} = $this->transform($val, '{{ link.entity }}', is_string($innerSample)? $innerSample: null);
         {% endif %}
+        } else {
+        {% if not link.isSingleValued %}
+            ${{ var }}_links['{{link.name}}'] = [];
+            foreach($val as $item) {
+                $class = ClassUtils::getRealClass(get_class($item));
+                if (is_object($innerSample) && isset($innerSample->$class)) {
+                    ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample->$class, $class);
+                } else {
+                    ${{ var }}_links['{{link.name}}'][] = static::getNode($item, $innerSample, $class);
+                }
+            }
+        {% else %}
+            $class = ClassUtils::getRealClass(get_class($val));
+            if (is_object($innerSample) && isset($innerSample->$class)) {
+                ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample->$class, $class);
+            } else {
+                ${{ var }}_links['{{link.name}}'] = static::getNode($val, $innerSample, $class);
+            }
+        {% endif %}
+        }
     }
     {% endfor %}
 }

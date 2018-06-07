@@ -9,6 +9,9 @@
 
 namespace Jett\JSONEntitySerializerBundle\Service;
 
+
+use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
+
 /**
  * Class Serializer provides serialization of classic doctrine entities with
  * single-column key called `id` to JSON.
@@ -18,10 +21,32 @@ class Serializer implements SerializerInterface
     /** @var BaseSerializer */
     protected $_instance;
 
-    public function __construct(ClassGenerator $generator)
+    protected $_class;
+
+    /**
+     * Serializer constructor.
+     *
+     * @param SerializerBuilder $generator
+     *
+     * @throws \Jett\JSONEntitySerializerBundle\Exception\ClassNotFoundException
+     * @throws \Jett\JSONEntitySerializerBundle\Exception\RenderFailedException
+     * @throws \Jett\JSONEntitySerializerBundle\Exception\SampleObjectException
+     */
+    public function __construct(SerializerBuilder $generator)
     {
         $generator->generateService();
         $this->_instance = $generator->loadSerializer();
+        $this->_class = $generator->getClassName();
+    }
+
+    /**
+     * Adds transformers to pool.
+     *
+     * @param TransformerInterface $transformer
+     */
+    public function addTransformer(TransformerInterface $transformer)
+    {
+        $this->_instance->addTransformer($transformer);
     }
 
     /**
@@ -56,8 +81,8 @@ class Serializer implements SerializerInterface
     /**
      * Cleans cache.
      */
-    public function cleanCache()
+    public function clearCache()
     {
-        $this->_instance->cleanCache();
+        $this->_class::clearCache();
     }
 }
