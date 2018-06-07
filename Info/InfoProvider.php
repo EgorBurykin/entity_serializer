@@ -16,12 +16,9 @@ use Jett\JSONEntitySerializerBundle\Service\ConfigService;
 
 /**
  * Class InfoProvider responsible for getting an information for generator.
- *
- * @package Jett\JSONEntitySerializerBundle\Service
  */
 class InfoProvider
 {
-
     protected $_em;
 
     private $_configService;
@@ -39,7 +36,7 @@ class InfoProvider
     }
 
     /**
-     * Returns class info
+     * Returns class info.
      *
      * @param string $className
      *
@@ -113,6 +110,7 @@ class InfoProvider
             $relation = new RelationInfo($propName, $method->name);
             $relation->entity = $info->targetEntity;
             $relation->isSingleValued = $info->singleValued;
+
             return $relation;
         }
 
@@ -210,5 +208,4 @@ class InfoProvider
 
         return $this->createInfoForSimpleField($prop, $fields[$prop->name]['type'] ?? '');
     }
-
 }

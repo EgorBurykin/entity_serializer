@@ -9,7 +9,6 @@
 
 namespace Jett\JSONEntitySerializerBundle\Info;
 
-
 class FieldInfo extends GeneratorInfo
 {
     public $type;

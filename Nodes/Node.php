@@ -22,7 +22,7 @@ class Node
     public $links = [];
 
     /**
-     * Normalized object without relations
+     * Normalized object without relations.
      *
      * @var object
      */

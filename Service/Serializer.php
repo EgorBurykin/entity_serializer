@@ -9,7 +9,6 @@
 
 namespace Jett\JSONEntitySerializerBundle\Service;
 
-
 use Jett\JSONEntitySerializerBundle\Transformer\TransformerInterface;
 
 /**

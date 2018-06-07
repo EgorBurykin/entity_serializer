@@ -54,6 +54,7 @@ abstract class Employee
 
     /**
      * @param mixed $name
+     *
      * @return Employee
      */
     public function setName($name)

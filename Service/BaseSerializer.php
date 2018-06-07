@@ -197,6 +197,7 @@ abstract class BaseSerializer
      *
      * @param Node          $node
      * @param string|object $sample
+     *
      * @return null|object
      */
     protected function compile(Node $node = null, $sample)

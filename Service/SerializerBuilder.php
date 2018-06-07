@@ -17,7 +17,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class SerializerBuilder
 {
-
     protected $_fs;
     private $_configService;
     private $_cachePath;
@@ -149,8 +148,6 @@ class SerializerBuilder
         return empty($files);
     }
 
-
-
     /**
      * @param $template - template name relative to bundle Resources/views
      * @param $vars - variables accessible from template
@@ -170,7 +167,6 @@ class SerializerBuilder
             throw new RenderFailedException($template, $ex);
         }
     }
-
 
     /**
      * Generates a function which contains the normalization logic for the current entity.
