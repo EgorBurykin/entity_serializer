@@ -63,4 +63,16 @@ class ConfigService
     {
         return md5(json_encode($config));
     }
+
+    /**
+     * Checks if serializer can serialize entity.
+     *
+     * @param $entity
+     *
+     * @return bool
+     */
+    public function canSerializeEntity($entity)
+    {
+        return isset($this->_config['entities'][$entity]);
+    }
 }

@@ -7,10 +7,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Jett\JSONEntitySerializerBundle\Nodes;
+namespace Jett\JSONEntitySerializerBundle\Info;
 
-class GeneratorNode
+class GeneratorInfo
 {
     public $getter;
     public $name;
+
+    public function __construct($name = null, $getter = null)
+    {
+        $this->name = $name;
+        $this->getter = $getter;
+    }
 }

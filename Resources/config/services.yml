@@ -9,11 +9,21 @@ services:
         alias:  Jett\JSONEntitySerializerBundle\Service\Serializer
         public: true
 
-    Jett\JSONEntitySerializerBundle\Service\ClassGenerator:
+    Jett\JSONEntitySerializerBundle\Annotation\AnnotationHelper:
         arguments:
             - '@annotation_reader'
             - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
+
+    Jett\JSONEntitySerializerBundle\Info\InfoProvider:
+        arguments:
+            - '@Jett\JSONEntitySerializerBundle\Annotation\AnnotationHelper'
+            - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
             - '@doctrine.orm.entity_manager'
+
+    Jett\JSONEntitySerializerBundle\Service\ClassGenerator:
+        arguments:
+            - '@Jett\JSONEntitySerializerBundle\Info\InfoProvider'
+            - '@Jett\JSONEntitySerializerBundle\Service\ConfigService'
             - '%kernel.cache_dir%/serializer'
             - '%kernel.environment%'
 

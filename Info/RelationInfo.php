@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Jett\JSONEntitySerializerBundle\Nodes;
+namespace Jett\JSONEntitySerializerBundle\Info;
 
-class RelationNode extends GeneratorNode
+class RelationInfo extends GeneratorInfo
 {
     public $entity;
     public $isSingleValued;

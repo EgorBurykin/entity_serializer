@@ -9,8 +9,6 @@
 
 namespace Jett\JSONEntitySerializerBundle\Service;
 
-use Jett\JSONEntitySerializerBundle\Exception\AbstractStaticCallException;
-
 /**
  * Class Serializer provides serialization of classic doctrine entities with
  * single-column key called `id` to JSON.
@@ -35,8 +33,6 @@ class Serializer implements SerializerInterface
      * @param $entity
      * @param object|string|null $sample
      *
-     * @throws AbstractStaticCallException
-     *
      * @return object|object[]
      */
     public function toPureObject($entity, $sample = null)
@@ -49,8 +45,6 @@ class Serializer implements SerializerInterface
      *
      * @param $entity
      * @param string|object|null $sample - defines what fields should be included to result
-     *
-     * @throws AbstractStaticCallException
      *
      * @return string
      */

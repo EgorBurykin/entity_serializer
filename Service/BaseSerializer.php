@@ -11,7 +11,6 @@ namespace Jett\JSONEntitySerializerBundle\Service;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
-use Jett\JSONEntitySerializerBundle\Exception\AbstractStaticCallException;
 use Jett\JSONEntitySerializerBundle\Nodes\Node;
 
 /**
@@ -60,8 +59,6 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $entity - Doctrine entity
      * @param object|string|null $sample - sample object or it's title from configuration or null, to use default
      *
-     * @throws AbstractStaticCallException if someone is trying to call some abstract static methods
-     *
      * @return object[]|object
      */
     public function toPureObject($entity, $sample = null)
@@ -95,8 +92,6 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $entity
      * @param null $sample
      *
-     * @throws AbstractStaticCallException
-     *
      * @return string
      */
     public function serialize($entity, $sample = null)
@@ -126,6 +121,7 @@ abstract class BaseSerializer implements SerializerInterface
      *
      * @param Node          $node
      * @param string|object $sample
+     * @return object
      */
     protected static function compile(Node $node = null, $sample)
     {
@@ -187,8 +183,6 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $sample - sample object or it's title. Samples provided by configuration of bundle
      * @param $entityFQCN - FQCN of entity
      *
-     * @throws AbstractStaticCallException - no way you can get this
-     *
      * @return Node|null
      */
     protected static function getNode($entity, &$sample, $entityFQCN)
@@ -213,13 +207,10 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $sample
      * @param string $entityFQCN
      *
-     * @throws AbstractStaticCallException
-     *
      * @return Node
      */
     protected static function toPlainJSON($entity, &$sample, string $entityFQCN)
     {
-        throw new AbstractStaticCallException('BaseSerializer::toPlainJSON');
     }
 
     /**
@@ -229,12 +220,9 @@ abstract class BaseSerializer implements SerializerInterface
      * @param $className
      * @param $sampleTitle
      *
-     * @throws AbstractStaticCallException
-     *
      * @return object
      */
     protected static function getSample($className, $sampleTitle)
     {
-        throw new AbstractStaticCallException('BaseSerializer::getSample');
     }
 }

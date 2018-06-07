@@ -9,6 +9,10 @@
 
 namespace Jett\JSONEntitySerializerBundle\DependencyInjection;
 
+use Jett\JSONEntitySerializerBundle\Annotation\GetterName;
+use Jett\JSONEntitySerializerBundle\Annotation\Ignore;
+use Jett\JSONEntitySerializerBundle\Annotation\SerializedName;
+use Jett\JSONEntitySerializerBundle\Annotation\VirtualProperty;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -29,16 +33,16 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('name_annotation')
-                    ->defaultValue('Jett\\JSONEntitySerializerBundle\\Annotation\\SerializedName')
+                    ->defaultValue(SerializedName::class)
                 ->end()
                 ->scalarNode('ignore_annotation')
-                    ->defaultValue('Jett\\JSONEntitySerializerBundle\\Annotation\\Ignore')
+                    ->defaultValue(Ignore::class)
                 ->end()
                 ->scalarNode('virtual_annotation')
-                    ->defaultValue('Jett\\JSONEntitySerializerBundle\\Annotation\\VirtualProperty')
+                    ->defaultValue(VirtualProperty::class)
                 ->end()
                 ->scalarNode('getter_annotation')
-                    ->defaultValue('Jett\\JSONEntitySerializerBundle\\Annotation\\GetterName')
+                    ->defaultValue(GetterName::class)
                 ->end()
                 ->arrayNode('entities')
                     ->useAttributeAsKey('name')

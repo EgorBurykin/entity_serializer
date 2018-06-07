@@ -10,19 +10,19 @@
 namespace Jett\JSONEntitySerializerBundle\Nodes;
 
 /**
- * Class represent node - an abstraction helping to store information about relations it object tree.
+ * Class represent node - an abstraction helping to store information about relations in object tree.
  */
 class Node
 {
     /**
-     * Associative array of Nodes indexed by property names.
+     * Object relations. Associative array of Nodes indexed by property names.
      *
      * @var array
      */
     public $links = [];
 
     /**
-     * Object for normalization itself.
+     * Normalized object without relations
      *
      * @var object
      */
